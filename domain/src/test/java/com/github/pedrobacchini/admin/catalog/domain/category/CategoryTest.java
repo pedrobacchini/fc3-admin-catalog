@@ -49,7 +49,7 @@ class CategoryTest {
 
     @Test
     void givenAnInvalidEmptyName_whenCallNewCategoryAndValidate_thenShouldReceiveError() {
-        final String expectedName = "  ";
+        final var expectedName = "  ";
         final var expectedErrorCount = 1;
         final var expectedErrorMessage = "'name' should not be empty";
         final var expectedDescription = "A categoria mais assistida";
@@ -64,7 +64,7 @@ class CategoryTest {
 
     @Test
     void givenAnInvalidNameLengthLessThan3_whenCallNewCategoryAndValidate_thenShouldReceiveError() {
-        final String expectedName = "Fi ";
+        final var expectedName = "Fi ";
         final var expectedErrorCount = 1;
         final var expectedErrorMessage = "'name' must be between 3 and 255 characters";
         final var expectedDescription = "A categoria mais assistida";
@@ -79,7 +79,7 @@ class CategoryTest {
 
     @Test
     void givenAnInvalidNameLengthMoreThan255_whenCallNewCategoryAndValidate_thenShouldReceiveError() {
-        final String expectedName = """
+        final var expectedName = """
              Todas estas questões, devidamente ponderadas, levantam dúvidas sobre se a consulta aos diversos
              militantes causa impacto indireto na reavaliação da gestão inovadora da qual fazemos parte. 
              Por outro lado, a consolidação das estruturas faz parte de um processo de gerenciamento das condições inegavelmente apropriadas.
@@ -136,7 +136,7 @@ class CategoryTest {
 
     @Test
     void givenAValidActiveCategory_whenCallDeactivate_thenReturnCategoryInactivate() {
-        final String expectedName = "Filmes";
+        final var expectedName = "Filmes";
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = false;
 
@@ -163,7 +163,7 @@ class CategoryTest {
 
     @Test
     void givenAValidInactiveCategory_whenCallActivate_thenReturnCategoryActivate() {
-        final String expectedName = "Filmes";
+        final var expectedName = "Filmes";
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = true;
 
@@ -178,6 +178,79 @@ class CategoryTest {
         final var actualCategory = aCategory.activate();
 
         assertDoesNotThrow(() -> actualCategory.validate(new ThrowsValidationHandler()));
+
+        assertEquals(aCategory.getId(), actualCategory.getId());
+        assertEquals(expectedName, actualCategory.getName());
+        assertEquals(expectedDescription, actualCategory.getDescription());
+        assertEquals(expectedIsActive, actualCategory.isActive());
+        assertEquals(createdAt, actualCategory.getCreatedAt());
+        assertTrue(actualCategory.getUpdatedAt().isAfter(updatedAt));
+        assertNull(actualCategory.getDeletedAt());
+    }
+
+    @Test
+    void givenAValidCategory_whenCallUpdate_thenReturnCategoryUpdated() {
+        final var expectedName = "Filmes";
+        final var expectedDescription = "A categoria mais assistida";
+        final var expectedIsActive = true;
+
+        final var aCategory = Category.newCategory("Film", "A categoria", expectedIsActive);
+        assertDoesNotThrow(() -> aCategory.validate(new ThrowsValidationHandler()));
+
+        final var createdAt = aCategory.getCreatedAt();
+        final var updatedAt = aCategory.getUpdatedAt();
+
+        final var actualCategory = aCategory.update(expectedName, expectedDescription, expectedIsActive);
+        assertDoesNotThrow(() -> actualCategory.validate(new ThrowsValidationHandler()));
+
+        assertEquals(aCategory.getId(), actualCategory.getId());
+        assertEquals(expectedName, actualCategory.getName());
+        assertEquals(expectedDescription, actualCategory.getDescription());
+        assertEquals(expectedIsActive, actualCategory.isActive());
+        assertEquals(createdAt, actualCategory.getCreatedAt());
+        assertTrue(actualCategory.getUpdatedAt().isAfter(updatedAt));
+        assertNull(actualCategory.getDeletedAt());
+    }
+
+    @Test
+    void givenAValidCategory_whenCallUpdateToInactivate_thenReturnCategoryUpdated() {
+        final var expectedName = "Filmes";
+        final var expectedDescription = "A categoria mais assistida";
+        final var expectedIsActive = false;
+
+        final var aCategory = Category.newCategory("Film", "A categoria", true);
+        assertDoesNotThrow(() -> aCategory.validate(new ThrowsValidationHandler()));
+        assertTrue(aCategory.isActive());
+        assertNull(aCategory.getDeletedAt());
+
+        final var createdAt = aCategory.getCreatedAt();
+        final var updatedAt = aCategory.getUpdatedAt();
+
+        final var actualCategory = aCategory.update(expectedName, expectedDescription, expectedIsActive);
+        assertDoesNotThrow(() -> actualCategory.validate(new ThrowsValidationHandler()));
+
+        assertEquals(aCategory.getId(), actualCategory.getId());
+        assertEquals(expectedName, actualCategory.getName());
+        assertEquals(expectedDescription, actualCategory.getDescription());
+        assertEquals(expectedIsActive, actualCategory.isActive());
+        assertEquals(createdAt, actualCategory.getCreatedAt());
+        assertTrue(actualCategory.getUpdatedAt().isAfter(updatedAt));
+        assertNotNull(actualCategory.getDeletedAt());
+    }
+
+    @Test
+    void givenAValidCategory_whenCallUpdateWithInvalidParams_thenReturnCategoryUpdated() {
+        final String expectedName = null;
+        final var expectedDescription = "A categoria mais assistida";
+        final var expectedIsActive = true;
+
+        final var aCategory = Category.newCategory("Filmes", "A categoria", expectedIsActive);
+        assertDoesNotThrow(() -> aCategory.validate(new ThrowsValidationHandler()));
+
+        final var createdAt = aCategory.getCreatedAt();
+        final var updatedAt = aCategory.getUpdatedAt();
+
+        final var actualCategory = aCategory.update(expectedName, expectedDescription, expectedIsActive);
 
         assertEquals(aCategory.getId(), actualCategory.getId());
         assertEquals(expectedName, actualCategory.getName());
