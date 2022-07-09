@@ -6,6 +6,7 @@ import com.github.pedrobacchini.admin.catalog.domain.validation.ValidationHandle
 import java.time.Instant;
 
 public class Category extends AggregateRoot<CategoryID> {
+
     private String name;
     private String description;
     private boolean active;
@@ -40,6 +41,28 @@ public class Category extends AggregateRoot<CategoryID> {
         return new Category(id, aName, aDescription, isActive, now, now, deletedAt);
     }
 
+    @Override
+    public void validate(final ValidationHandler handler) {
+        new CategoryValidator(this, handler).validate();
+    }
+
+    public Category deactivate() {
+        final Instant now = Instant.now();
+        if (getDeletedAt() == null) {
+            this.deletedAt = now;
+        }
+        this.active = false;
+        this.updatedAt = now;
+        return this;
+    }
+
+    public Category activate() {
+        this.deletedAt = null;
+        this.active = true;
+        this.updatedAt = Instant.now();
+        return this;
+    }
+
     public CategoryID getCategoryID() {
         return id;
     }
@@ -66,11 +89,6 @@ public class Category extends AggregateRoot<CategoryID> {
 
     public Instant getDeletedAt() {
         return deletedAt;
-    }
-
-    @Override
-    public void validate(final ValidationHandler handler) {
-        new CategoryValidator(this, handler).validate();
     }
 
 }
