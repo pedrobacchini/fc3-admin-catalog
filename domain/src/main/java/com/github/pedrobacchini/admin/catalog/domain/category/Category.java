@@ -1,11 +1,10 @@
 package com.github.pedrobacchini.admin.catalog.domain.category;
 
+import com.github.pedrobacchini.admin.catalog.domain.AggregateRoot;
+
 import java.time.Instant;
-import java.util.UUID;
 
-public class Category {
-
-    private String id;
+public class Category extends AggregateRoot<CategoryID> {
     private String name;
     private String description;
     private boolean active;
@@ -14,32 +13,32 @@ public class Category {
     private Instant deletedAt;
 
     private Category(
-        final String id,
-        final String name,
-        final String description,
-        final boolean active,
-        final Instant createdAt,
-        final Instant updatedAt,
-        final Instant deletedAt) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.active = active;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.deletedAt = deletedAt;
+        final CategoryID anId,
+        final String aName,
+        final String aDescription,
+        final boolean isActive,
+        final Instant aCreatedInstant,
+        final Instant aUpdatedInstant,
+        final Instant aDeletedInstant) {
+        super(anId);
+        this.name = aName;
+        this.description = aDescription;
+        this.active = isActive;
+        this.createdAt = aCreatedInstant;
+        this.updatedAt = aUpdatedInstant;
+        this.deletedAt = aDeletedInstant;
     }
 
     public static Category newCategory(
         final String aName,
         final String aDescription,
         final boolean aIsActive) {
-        final var id = UUID.randomUUID().toString();
+        final var id = CategoryID.unique();
         final var now = Instant.now();
         return new Category(id, aName, aDescription, aIsActive, now, now, null);
     }
 
-    public String getId() {
+    public CategoryID getCategoryID() {
         return id;
     }
 
