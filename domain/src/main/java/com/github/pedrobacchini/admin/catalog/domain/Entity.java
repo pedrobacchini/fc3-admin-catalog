@@ -1,5 +1,7 @@
 package com.github.pedrobacchini.admin.catalog.domain;
 
+import com.github.pedrobacchini.admin.catalog.domain.validation.ValidationHandler;
+
 import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
@@ -7,6 +9,8 @@ import static java.util.Objects.requireNonNull;
 public abstract class Entity<ID extends Identifier> {
 
     protected final ID id;
+
+    public abstract void validate(ValidationHandler handler);
 
     protected Entity(final ID id) {
         requireNonNull(id, "'id' should not be null");
