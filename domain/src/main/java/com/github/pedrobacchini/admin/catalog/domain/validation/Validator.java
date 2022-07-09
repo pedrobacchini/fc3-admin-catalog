@@ -8,7 +8,7 @@ public abstract class Validator {
         this.handler = aHandler;
     }
 
-    public abstract void validate();
+//    public abstract void validate();
 
     protected ValidationHandler validationHandler() {
         return this.handler;

@@ -36,7 +36,8 @@ public class Category extends AggregateRoot<CategoryID> {
         final boolean isActive) {
         final var id = CategoryID.unique();
         final var now = Instant.now();
-        return new Category(id, aName, aDescription, isActive, now, now, null);
+        final var deletedAt = isActive ? null : now;
+        return new Category(id, aName, aDescription, isActive, now, now, deletedAt);
     }
 
     public CategoryID getCategoryID() {
