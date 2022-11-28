@@ -77,7 +77,7 @@ public class Category extends AggregateRoot<CategoryID> implements Cloneable {
         return this;
     }
 
-    public CategoryID getCategoryID() {
+    public CategoryID getID() {
         return id;
     }
 
