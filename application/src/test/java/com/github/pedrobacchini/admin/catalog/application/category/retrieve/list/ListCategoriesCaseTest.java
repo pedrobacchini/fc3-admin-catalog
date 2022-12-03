@@ -24,10 +24,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ListCategoriesByIdUseCaseTest {
+public class ListCategoriesCaseTest {
 
     @InjectMocks
-    private DefaultListCategoriesByIdUseCase defaultListCategoriesByIdUseCase;
+    private DefaultListCategoriesUseCase defaultListCategoriesUseCase;
 
     @Mock
     private CategoryGateway categoryGateway;
@@ -47,7 +47,7 @@ public class ListCategoriesByIdUseCaseTest {
 
         when(categoryGateway.findAll(aQuery)).thenReturn(expectedPagination);
 
-        final var actualResult = defaultListCategoriesByIdUseCase.execute(aQuery);
+        final var actualResult = defaultListCategoriesUseCase.execute(aQuery);
 
         verify(categoryGateway, times(1)).findAll(aQuery);
 
@@ -66,7 +66,7 @@ public class ListCategoriesByIdUseCaseTest {
 
         when(categoryGateway.findAll(aQuery)).thenReturn(pagination);
 
-        final var actualResult = defaultListCategoriesByIdUseCase.execute(aQuery);
+        final var actualResult = defaultListCategoriesUseCase.execute(aQuery);
 
         verify(categoryGateway, times(1)).findAll(aQuery);
 
@@ -86,7 +86,7 @@ public class ListCategoriesByIdUseCaseTest {
 
         final var actualException = assertThrows(
             IllegalStateException.class,
-            () -> defaultListCategoriesByIdUseCase.execute(aQuery));
+            () -> defaultListCategoriesUseCase.execute(aQuery));
 
         verify(categoryGateway, times(1)).findAll(aQuery);
 

@@ -6,11 +6,11 @@ import com.github.pedrobacchini.admin.catalog.domain.pagination.Pagination;
 
 import java.util.Objects;
 
-public class DefaultListCategoriesByIdUseCase extends ListCategoriesByIdUseCase {
+public class DefaultListCategoriesUseCase extends ListCategoriesUseCase {
 
     private final CategoryGateway categoryGateway;
 
-    public DefaultListCategoriesByIdUseCase(final CategoryGateway categoryGateway) {
+    public DefaultListCategoriesUseCase(final CategoryGateway categoryGateway) {
         this.categoryGateway = Objects.requireNonNull(categoryGateway);
     }
 
