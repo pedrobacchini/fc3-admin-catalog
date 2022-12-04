@@ -1,12 +1,15 @@
 package com.github.pedrobacchini.admin.catalog.infrastructure;
 
-import com.github.pedrobacchini.admin.catalog.application.UseCase;
 
+import com.github.pedrobacchini.admin.catalog.infrastructure.configuration.WebServerConfig;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
 public class Main {
 
     public static void main(String[] args) {
-//        System.out.println("Hello world!");
-//        System.out.println(new UseCase().execute());
+        SpringApplication.run(WebServerConfig.class, args);
     }
 
 }
