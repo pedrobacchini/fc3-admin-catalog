@@ -9,8 +9,8 @@ import jakarta.persistence.Table;
 
 import java.time.Instant;
 
-@Table
 @Entity
+@Table(name = "category")
 public class CategoryJpaEntity {
 
     @Id
@@ -134,3 +134,4 @@ public class CategoryJpaEntity {
     }
 
 }
+
