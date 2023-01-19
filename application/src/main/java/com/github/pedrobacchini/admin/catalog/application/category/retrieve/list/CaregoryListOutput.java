@@ -16,7 +16,7 @@ public record CaregoryListOutput(
 
     public static CaregoryListOutput from(final Category category) {
         return new CaregoryListOutput(
-            category.getID(),
+            category.getId(),
             category.getName(),
             category.getDescription(),
             category.isActive(),

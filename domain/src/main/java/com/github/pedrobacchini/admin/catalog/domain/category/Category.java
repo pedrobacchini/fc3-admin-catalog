@@ -4,6 +4,7 @@ import com.github.pedrobacchini.admin.catalog.domain.AggregateRoot;
 import com.github.pedrobacchini.admin.catalog.domain.validation.ValidationHandler;
 
 import java.time.Instant;
+import java.util.Objects;
 
 public class Category extends AggregateRoot<CategoryID> implements Cloneable {
 
@@ -26,8 +27,8 @@ public class Category extends AggregateRoot<CategoryID> implements Cloneable {
         this.name = aName;
         this.description = aDescription;
         this.active = isActive;
-        this.createdAt = aCreatedInstant;
-        this.updatedAt = aUpdatedInstant;
+        this.createdAt = Objects.requireNonNull(aCreatedInstant, "'createdAt' should not be null");
+        this.updatedAt = Objects.requireNonNull(aUpdatedInstant, "'updatedAt' should not be null");
         this.deletedAt = aDeletedInstant;
     }
 
@@ -88,7 +89,7 @@ public class Category extends AggregateRoot<CategoryID> implements Cloneable {
         return this;
     }
 
-    public CategoryID getID() {
+    public CategoryID getId() {
         return id;
     }
 

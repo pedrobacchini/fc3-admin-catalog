@@ -47,7 +47,7 @@ public class GetCategoryByIdUseCaseTest {
 
         verify(categoryGateway, times(1)).findById(expectedID);
 
-        assertEquals(expectedCategory.getID(), actualCategory.id());
+        assertEquals(expectedCategory.getId(), actualCategory.id());
         assertEquals(expectedCategory.getName(), actualCategory.name());
         assertEquals(expectedCategory.getDescription(), actualCategory.description());
         assertEquals(expectedCategory.isActive(), actualCategory.isActive());
