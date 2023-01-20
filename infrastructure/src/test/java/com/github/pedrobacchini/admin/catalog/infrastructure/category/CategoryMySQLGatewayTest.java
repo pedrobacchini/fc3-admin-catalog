@@ -48,7 +48,7 @@ class CategoryMySQLGatewayTest {
         assertNull(actualCategory.getDeletedAt());
 
         final var actualEntity = categoryRepository.findById(actualCategory.getId().getValue())
-                .orElseThrow(AssertionFailedError::new);
+            .orElseThrow(AssertionFailedError::new);
 
         assertEquals(aCategory.getId().getValue(), actualEntity.getId());
         assertEquals(expectedName, actualEntity.getName());
@@ -137,6 +137,43 @@ class CategoryMySQLGatewayTest {
 
         assertEquals(0, categoryRepository.count());
         assertEquals(expectedMessageError, actualException.getMessage());
+    }
+
+    @Test
+    void givenAPrePesistedCategoryAnValidCategoryId_whenCallsFindById_shouldReturnCategory() {
+        final var aCategory = Category.newCategory("Filmes", "A categoria", true);
+
+        assertEquals(0, categoryRepository.count());
+
+        categoryRepository.save(CategoryJpaEntity.from(aCategory));
+
+        assertEquals(1, categoryRepository.count());
+
+        final var actualCategory = categoryMySQLGateway.findById(aCategory.getId())
+            .orElseThrow(AssertionFailedError::new);
+
+        assertEquals(1, categoryRepository.count());
+
+        assertEquals(aCategory.getId(), actualCategory.getId());
+        assertEquals(aCategory.getName(), actualCategory.getName());
+        assertEquals(aCategory.getDescription(), actualCategory.getDescription());
+        assertEquals(aCategory.isActive(), actualCategory.isActive());
+        assertEquals(aCategory.getCreatedAt(), actualCategory.getCreatedAt());
+        assertEquals(aCategory.getUpdatedAt(), actualCategory.getUpdatedAt());
+        assertEquals(aCategory.getDeletedAt(), actualCategory.getDeletedAt());
+        assertNull(actualCategory.getDeletedAt());
+    }
+
+    @Test
+    void givenValidCategoryIdNotStored_whenCallsFindById_shouldReturnEmpty() {
+
+        assertEquals(0, categoryRepository.count());
+
+        final var actualCategoryOptional = categoryMySQLGateway.findById(CategoryID.from("empty"));
+
+        assertEquals(0, categoryRepository.count());
+
+        assertTrue(actualCategoryOptional.isEmpty());
     }
 
 }
