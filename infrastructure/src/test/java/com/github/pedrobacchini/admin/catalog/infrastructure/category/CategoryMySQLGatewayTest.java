@@ -1,15 +1,18 @@
 package com.github.pedrobacchini.admin.catalog.infrastructure.category;
 
 import com.github.pedrobacchini.admin.catalog.domain.category.Category;
+import com.github.pedrobacchini.admin.catalog.domain.category.CategoryID;
 import com.github.pedrobacchini.admin.catalog.infrastructure.MySQLGatewayTest;
 import com.github.pedrobacchini.admin.catalog.infrastructure.category.persistence.CategoryJpaEntity;
 import com.github.pedrobacchini.admin.catalog.infrastructure.category.persistence.CategoryRepository;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @MySQLGatewayTest
@@ -104,6 +107,36 @@ class CategoryMySQLGatewayTest {
         assertTrue(aCategory.getUpdatedAt().isBefore(actualEntity.getUpdatedAt()));
         assertEquals(aCategory.getDeletedAt(), actualEntity.getDeletedAt());
         assertNull(actualEntity.getDeletedAt());
+    }
+
+    @Test
+    void givenAPrePesistedCategoryAnValidCategoryId_whenCallsDelete_shouldDeleteCategory() {
+
+        final var aCategory = Category.newCategory("Filmes", "A categoria", true);
+
+        assertEquals(0, categoryRepository.count());
+
+        categoryRepository.save(CategoryJpaEntity.from(aCategory));
+
+        assertEquals(1, categoryRepository.count());
+
+        categoryMySQLGateway.deleteById(aCategory.getId());
+
+        assertEquals(0, categoryRepository.count());
+    }
+
+    @Test
+    void givenAPrePesistedCategoryAnInvalidCategoryId_whenCallsDelete_shouldDeleteCategory() {
+        final var expectedMessageError = "No class com.github.pedrobacchini.admin.catalog.infrastructure.category.persistence.CategoryJpaEntity " +
+            "entity with id invalid exists!";
+
+        assertEquals(0, categoryRepository.count());
+
+        final var actualException = assertThrows(EmptyResultDataAccessException.class,
+            () -> categoryMySQLGateway.deleteById(CategoryID.from("invalid")));
+
+        assertEquals(0, categoryRepository.count());
+        assertEquals(expectedMessageError, actualException.getMessage());
     }
 
 }

@@ -29,7 +29,7 @@ public class CategoryMySQLGateway implements CategoryGateway {
 
     @Override
     public void deleteById(final CategoryID anId) {
-
+        categoryRepository.deleteById(anId.getValue());
     }
 
     @Override
