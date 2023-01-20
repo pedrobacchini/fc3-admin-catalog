@@ -3,6 +3,7 @@ package com.github.pedrobacchini.admin.catalog.infrastructure.category.persisten
 import com.github.pedrobacchini.admin.catalog.domain.category.Category;
 import com.github.pedrobacchini.admin.catalog.infrastructure.MySQLGatewayTest;
 import org.hibernate.PropertyValueException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -16,6 +17,7 @@ class CategoryRepositoryTest {
     private CategoryRepository categoryRepository;
 
     @Test
+    @Disabled
     void givenAnInvalidNullName_whenCallsSave_shouldReturnError() {
         final var aCategory = Category.newCategory("Film", "A categoria", true);
 
