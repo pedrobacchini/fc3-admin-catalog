@@ -6,16 +6,16 @@ import com.github.pedrobacchini.admin.catalog.domain.validation.ValidationHandle
 import java.time.Instant;
 import java.util.Objects;
 
-public class Category extends AggregateRoot<CategoryID> implements Cloneable {
+public abstract class Category extends AggregateRoot<CategoryID> {
 
-    private String name;
-    private String description;
-    private boolean active;
-    private Instant createdAt;
-    private Instant updatedAt;
-    private Instant deletedAt;
+    protected String name;
+    protected String description;
+    protected boolean active;
+    protected Instant createdAt;
+    protected Instant updatedAt;
+    protected Instant deletedAt;
 
-    private Category(
+    protected Category(
         final CategoryID anId,
         final String aName,
         final String aDescription,
@@ -32,25 +32,18 @@ public class Category extends AggregateRoot<CategoryID> implements Cloneable {
         this.deletedAt = aDeletedInstant;
     }
 
-    public static Category newCategory(
+    protected Category(
         final String aName,
         final String aDescription,
         final boolean isActive) {
-        final var id = CategoryID.unique();
+        super(CategoryID.unique());
+        this.name = aName;
+        this.description = aDescription;
+        this.active = isActive;
         final var now = Instant.now();
-        final var deletedAt = isActive ? null : now;
-        return new Category(id, aName, aDescription, isActive, now, now, deletedAt);
-    }
-
-    public static Category with(
-        final CategoryID id,
-        final String name,
-        final String description,
-        final boolean active,
-        final Instant createdAt,
-        final Instant updatedAt,
-        final Instant deletedAt) {
-        return new Category(id, name, description, active, createdAt, updatedAt, deletedAt);
+        this.createdAt = now;
+        this.updatedAt = now;
+        this.deletedAt = isActive ? null : now;
     }
 
     @Override
@@ -58,31 +51,9 @@ public class Category extends AggregateRoot<CategoryID> implements Cloneable {
         new CategoryValidator(this, handler).validate();
     }
 
-    public Category deactivate() {
-        final Instant now = Instant.now();
-        if (getDeletedAt() == null) {
-            this.deletedAt = now;
-        }
-        this.active = false;
-        this.updatedAt = now;
-        return this;
-    }
-
-    public Category activate() {
-        this.deletedAt = null;
-        this.active = true;
-        this.updatedAt = Instant.now();
-        return this;
-    }
-
-    public Category update(
+    protected Category update(
         final String aName,
-        final String aDescription,
-        final boolean isActive) {
-        if (isActive)
-            activate();
-        else
-            deactivate();
+        final String aDescription) {
         this.name = aName;
         this.description = aDescription;
         this.updatedAt = Instant.now();
@@ -115,15 +86,6 @@ public class Category extends AggregateRoot<CategoryID> implements Cloneable {
 
     public Instant getDeletedAt() {
         return deletedAt;
-    }
-
-    @Override
-    public Category clone() {
-        try {
-            return (Category) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
     }
 
 }

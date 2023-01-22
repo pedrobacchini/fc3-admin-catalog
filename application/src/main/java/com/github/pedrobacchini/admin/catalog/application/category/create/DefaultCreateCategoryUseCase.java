@@ -2,6 +2,7 @@ package com.github.pedrobacchini.admin.catalog.application.category.create;
 
 import com.github.pedrobacchini.admin.catalog.domain.category.Category;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryGateway;
+import com.github.pedrobacchini.admin.catalog.domain.category.CommonCategory;
 import com.github.pedrobacchini.admin.catalog.domain.validation.handler.Notification;
 import io.vavr.API;
 import io.vavr.control.Either;
@@ -23,7 +24,7 @@ public class DefaultCreateCategoryUseCase extends CreateCategoryUseCase {
         final var isActive = aCommand.isActive();
 
         final var notification = Notification.create();
-        final var aCategory = Category.newCategory(aName, aDescription, isActive);
+        final var aCategory = CommonCategory.newCategory(aName, aDescription, isActive);
         aCategory.validate(notification);
 
         return notification.hasError() ? API.Left(notification) : create(aCategory);

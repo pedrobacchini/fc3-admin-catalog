@@ -1,8 +1,8 @@
 package com.github.pedrobacchini.admin.catalog.infrastructure.category;
 
-import com.github.pedrobacchini.admin.catalog.domain.category.Category;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryID;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategorySearchQuery;
+import com.github.pedrobacchini.admin.catalog.domain.category.CommonCategory;
 import com.github.pedrobacchini.admin.catalog.infrastructure.MySQLGatewayTest;
 import com.github.pedrobacchini.admin.catalog.infrastructure.category.persistence.CategoryJpaEntity;
 import com.github.pedrobacchini.admin.catalog.infrastructure.category.persistence.CategoryRepository;
@@ -33,7 +33,7 @@ class CategoryMySQLGatewayTest {
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = true;
 
-        final var aCategory = Category.newCategory(expectedName, expectedDescription, expectedIsActive);
+        final var aCategory = CommonCategory.newCategory(expectedName, expectedDescription, expectedIsActive);
 
         assertEquals(0, categoryRepository.count());
 
@@ -65,7 +65,7 @@ class CategoryMySQLGatewayTest {
 
     @Test
     void givenAValidCategory_whenCallsUpdate_shouldReturnANewCategory() {
-        final var aCategory = Category.newCategory("Film", null, true);
+        final var aCategory = CommonCategory.newCategory("Film", null, true);
 
         assertEquals(0, categoryRepository.count());
 
@@ -84,7 +84,7 @@ class CategoryMySQLGatewayTest {
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = true;
 
-        final var aUpdatedCategory = aCategory.clone().update(expectedName, expectedDescription, expectedIsActive);
+        final var aUpdatedCategory = aCategory.clone().update(expectedName, expectedDescription);
 
         final var actualCategory = categoryMySQLGateway.update(aUpdatedCategory);
 
@@ -115,7 +115,7 @@ class CategoryMySQLGatewayTest {
     @Test
     void givenAPrePesistedCategoryAnValidCategoryId_whenCallsDelete_shouldDeleteCategory() {
 
-        final var aCategory = Category.newCategory("Filmes", "A categoria", true);
+        final var aCategory = CommonCategory.newCategory("Filmes", "A categoria", true);
 
         assertEquals(0, categoryRepository.count());
 
@@ -144,7 +144,7 @@ class CategoryMySQLGatewayTest {
 
     @Test
     void givenAPrePesistedCategoryAnValidCategoryId_whenCallsFindById_shouldReturnCategory() {
-        final var aCategory = Category.newCategory("Filmes", "A categoria", true);
+        final var aCategory = CommonCategory.newCategory("Filmes", "A categoria", true);
 
         assertEquals(0, categoryRepository.count());
 
@@ -185,9 +185,9 @@ class CategoryMySQLGatewayTest {
         final var expectedPerPage = 1;
         final var expectedTotal = 3;
 
-        final var filmes = Category.newCategory("Filmes", null, true);
-        final var series = Category.newCategory("Series", null, true);
-        final var documentario = Category.newCategory("Documentario", null, true);
+        final var filmes = CommonCategory.newCategory("Filmes", null, true);
+        final var series = CommonCategory.newCategory("Series", null, true);
+        final var documentario = CommonCategory.newCategory("Documentario", null, true);
 
         assertEquals(0, categoryRepository.count());
 
@@ -229,9 +229,9 @@ class CategoryMySQLGatewayTest {
         final var expectedPerPage = 1;
         final var expectedTotal = 3;
 
-        final var filmes = Category.newCategory("Filmes", null, true);
-        final var series = Category.newCategory("Series", null, true);
-        final var documentario = Category.newCategory("Documentario", null, true);
+        final var filmes = CommonCategory.newCategory("Filmes", null, true);
+        final var series = CommonCategory.newCategory("Series", null, true);
+        final var documentario = CommonCategory.newCategory("Documentario", null, true);
 
         assertEquals(0, categoryRepository.count());
 
@@ -282,9 +282,9 @@ class CategoryMySQLGatewayTest {
         final var expectedPerPage = 1;
         final var expectedTotal = 1;
 
-        final var filmes = Category.newCategory("Filmes", null, true);
-        final var series = Category.newCategory("Series", null, true);
-        final var documentario = Category.newCategory("Documentario", null, true);
+        final var filmes = CommonCategory.newCategory("Filmes", null, true);
+        final var series = CommonCategory.newCategory("Series", null, true);
+        final var documentario = CommonCategory.newCategory("Documentario", null, true);
 
         assertEquals(0, categoryRepository.count());
 
@@ -311,9 +311,9 @@ class CategoryMySQLGatewayTest {
         final var expectedPerPage = 1;
         final var expectedTotal = 1;
 
-        final var filmes = Category.newCategory("Filmes", "A categoria mais assistida", true);
-        final var series = Category.newCategory("Series", "Uma categoria assistida", true);
-        final var documentario = Category.newCategory("Documentario", "A categoria menos assistida", true);
+        final var filmes = CommonCategory.newCategory("Filmes", "A categoria mais assistida", true);
+        final var series = CommonCategory.newCategory("Series", "Uma categoria assistida", true);
+        final var documentario = CommonCategory.newCategory("Documentario", "A categoria menos assistida", true);
 
         assertEquals(0, categoryRepository.count());
 

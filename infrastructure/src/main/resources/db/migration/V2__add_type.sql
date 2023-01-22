@@ -1,0 +1,2 @@
+ALTER TABLE category
+ADD type INTEGER NOT NULL;

@@ -1,9 +1,9 @@
 package com.github.pedrobacchini.admin.catalog.application.category.retrieve.get;
 
 import com.github.pedrobacchini.admin.catalog.application.DummyUtil;
-import com.github.pedrobacchini.admin.catalog.domain.category.Category;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryGateway;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryID;
+import com.github.pedrobacchini.admin.catalog.domain.category.CommonCategory;
 import com.github.pedrobacchini.admin.catalog.domain.exception.DomainException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ public class GetCategoryByIdUseCaseTest {
 
     @Test
     void givenAValidId_whenCallsGetCategory_shouldReturnCategory() {
-        final var expectedCategory = DummyUtil.dummyObject(Category.class);
+        final var expectedCategory = DummyUtil.dummyObject(CommonCategory.class);
         final var expectedID = expectedCategory.getId();
 
         when(categoryGateway.findById(expectedID)).thenReturn(Optional.of(expectedCategory.clone()));
