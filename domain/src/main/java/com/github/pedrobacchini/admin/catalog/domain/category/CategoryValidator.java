@@ -15,7 +15,7 @@ public class CategoryValidator extends Validator {
         category = aCategory;
     }
 
-//    @Override
+    @Override
     public void validate() {
         checkNameConstraints();
     }
