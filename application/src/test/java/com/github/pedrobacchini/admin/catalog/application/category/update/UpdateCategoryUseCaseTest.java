@@ -1,8 +1,8 @@
 package com.github.pedrobacchini.admin.catalog.application.category.update;
 
-import com.github.pedrobacchini.admin.catalog.domain.category.Category;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryGateway;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryID;
+import com.github.pedrobacchini.admin.catalog.domain.category.CommonCategory;
 import com.github.pedrobacchini.admin.catalog.domain.exception.DomainException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,7 +45,7 @@ public class UpdateCategoryUseCaseTest {
 
     @Test
     void givenAValidCommand_whenCallsUpdateCategory_shouldReturnCategoryId() {
-        final var aCategory = Category.newCategory("Film", null, true);
+        final var aCategory = CommonCategory.newCategory("Film", null, true);
 
         final var expectedName = "Filmes";
         final var expectedDescription = "A categoria mais assistida";
@@ -79,7 +79,7 @@ public class UpdateCategoryUseCaseTest {
 
     @Test
     void givenAInvalidName_whenCallsUpdateCategory_thenShouldReturnDomainException() {
-        final var aCategory = Category.newCategory("Film", null, true);
+        final var aCategory = CommonCategory.newCategory("Film", null, true);
 
         final String expectedName = null;
         final var expectedDescription = "A categoria mais assistida";
@@ -106,7 +106,7 @@ public class UpdateCategoryUseCaseTest {
 
     @Test
     void givenAValidInactiveCommand_whenCallsUpdateCategory_shouldReturnInactiveCategoryId() {
-        final var aCategory = Category.newCategory("Film", null, true);
+        final var aCategory = CommonCategory.newCategory("Film", null, true);
         final var expectedName = "Filmes";
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = false;
@@ -141,7 +141,7 @@ public class UpdateCategoryUseCaseTest {
 
     @Test
     void givenAValidCommand_whenGatewayThrowsRandomException_shouldReturnAException() {
-        final var aCategory = Category.newCategory("Film", null, true);
+        final var aCategory = CommonCategory.newCategory("Film", null, true);
         final var expectedName = "Filmes";
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = true;

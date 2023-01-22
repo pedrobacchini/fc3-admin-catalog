@@ -3,6 +3,8 @@ package com.github.pedrobacchini.admin.catalog.application.category.update;
 import com.github.pedrobacchini.admin.catalog.domain.category.Category;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryGateway;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryID;
+import com.github.pedrobacchini.admin.catalog.domain.category.CommonCategory;
+import com.github.pedrobacchini.admin.catalog.domain.category.RestrictCategory;
 import com.github.pedrobacchini.admin.catalog.domain.exception.DomainException;
 import com.github.pedrobacchini.admin.catalog.domain.validation.Error;
 import com.github.pedrobacchini.admin.catalog.domain.validation.handler.Notification;
@@ -30,9 +32,31 @@ public class DefaultUpdateCategoryUseCase extends UpdateCategoryUseCase {
         final var aCategory = categoryGateway.findById(anId)
             .orElseThrow(notFound(anId));
         final var notification = Notification.create();
-        aCategory.update(aName, aDescription, isActive)
-            .validate(notification);
+        getUpdateCategoryOutputs(aName, aDescription, isActive, aCategory, notification)
+            .map(category -> {
+                category.validate(notification);
+                return category;
+            });
         return notification.hasError() ? API.Left(notification) : update(aCategory);
+    }
+
+    private static Either<Notification, Category> getUpdateCategoryOutputs(
+        final String aName,
+        final String aDescription,
+        final boolean isActive,
+        final Category aCategory,
+        final Notification notification) {
+        if (aCategory instanceof final CommonCategory commonCategory) {
+            final var aCategoryUpdated = commonCategory.update(aName, aDescription);
+            if (isActive) aCategoryUpdated.activate();
+            else aCategoryUpdated.deactivate();
+            return API.Right(aCategoryUpdated);
+        } else if (aCategory instanceof RestrictCategory && !isActive) {
+            notification.append(new Error("cannot inactivate this category"));
+        } else {
+            notification.append(new Error("type not supported"));
+        }
+        return API.Left(notification);
     }
 
     private Supplier<DomainException> notFound(final CategoryID anId) {

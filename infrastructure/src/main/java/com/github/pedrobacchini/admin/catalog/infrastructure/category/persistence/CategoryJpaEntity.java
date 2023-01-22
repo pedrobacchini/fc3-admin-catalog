@@ -2,13 +2,14 @@ package com.github.pedrobacchini.admin.catalog.infrastructure.category.persisten
 
 import com.github.pedrobacchini.admin.catalog.domain.category.Category;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryID;
-//import jakarta.persistence .Column;
-//import jakarta.persistence.Entity;
-//import jakarta.persistence.Id;
-//import jakarta.persistence.Table;
+import com.github.pedrobacchini.admin.catalog.domain.category.CommonCategory;
+import com.github.pedrobacchini.admin.catalog.domain.category.RestrictCategory;
+import com.github.pedrobacchini.admin.catalog.infrastructure.CategoryType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.Instant;
@@ -29,6 +30,10 @@ public class CategoryJpaEntity {
     @Column(name = "active", nullable = false)
     private boolean active;
 
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "type", nullable = false)
+    private CategoryType type;
+
     @Column(name = "created_at", nullable = false, columnDefinition = "DATETIME(6)")
     private Instant createdAt;
 
@@ -46,6 +51,7 @@ public class CategoryJpaEntity {
         final String name,
         final String description,
         final boolean active,
+        final CategoryType type,
         final Instant createdAt,
         final Instant updatedAt,
         final Instant deletedAt) {
@@ -53,32 +59,58 @@ public class CategoryJpaEntity {
         this.name = name;
         this.description = description;
         this.active = active;
+        this.type = type;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
     }
 
     public static CategoryJpaEntity from(final Category category) {
-        return new CategoryJpaEntity(
-            category.getId().getValue(),
-            category.getName(),
-            category.getDescription(),
-            category.isActive(),
-            category.getCreatedAt(),
-            category.getUpdatedAt(),
-            category.getDeletedAt()
-        );
+        if (category instanceof RestrictCategory) {
+            return new CategoryJpaEntity(
+                category.getId().getValue(),
+                category.getName(),
+                category.getDescription(),
+                category.isActive(),
+                CategoryType.RESTRICT,
+                category.getCreatedAt(),
+                category.getUpdatedAt(),
+                category.getDeletedAt()
+            );
+        } else {
+            return new CategoryJpaEntity(
+                category.getId().getValue(),
+                category.getName(),
+                category.getDescription(),
+                category.isActive(),
+                CategoryType.COOMON,
+                category.getCreatedAt(),
+                category.getUpdatedAt(),
+                category.getDeletedAt()
+            );
+        }
     }
 
     public Category toAggregate() {
-        return Category.with(
-            CategoryID.from(getId()),
-            getName(),
-            getDescription(),
-            isActive(),
-            getCreatedAt(),
-            getUpdatedAt(),
-            getDeletedAt());
+        if (type.equals(CategoryType.RESTRICT)) {
+            return RestrictCategory.with(
+                CategoryID.from(getId()),
+                getName(),
+                getDescription(),
+                isActive(),
+                getCreatedAt(),
+                getUpdatedAt(),
+                getDeletedAt());
+        } else {
+            return CommonCategory.with(
+                CategoryID.from(getId()),
+                getName(),
+                getDescription(),
+                isActive(),
+                getCreatedAt(),
+                getUpdatedAt(),
+                getDeletedAt());
+        }
     }
 
     public String getId() {
