@@ -1,6 +1,7 @@
 package com.github.pedrobacchini.admin.catalog.application.category.create;
 
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryGateway;
+import com.github.pedrobacchini.admin.catalog.domain.category.CategoryType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,8 +42,9 @@ public class CreateCategoryUseCaseTest {
         final var expectedName = "Filmes";
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = true;
+        final var expectedType = CategoryType.COMMON;
 
-        final var aCommand = CreateCategoryCommand.with(expectedName, expectedDescription, expectedIsActive);
+        final var aCommand = CreateCategoryCommand.with(expectedName, expectedDescription, expectedIsActive, expectedType);
 
         when(categoryGateway.create(any())).thenAnswer(returnsFirstArg());
 
@@ -56,6 +58,7 @@ public class CreateCategoryUseCaseTest {
                 && Objects.equals(expectedName, aCategory.getName())
                 && Objects.equals(expectedDescription, aCategory.getDescription())
                 && Objects.equals(expectedIsActive, aCategory.isActive())
+                && Objects.equals(expectedType, aCategory.getType())
                 && Objects.nonNull(aCategory.getCreatedAt())
                 && Objects.nonNull(aCategory.getUpdatedAt())
                 && Objects.isNull(aCategory.getDeletedAt())));
@@ -66,10 +69,11 @@ public class CreateCategoryUseCaseTest {
         final String expectedName = null;
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = true;
+        final var expectedType = CategoryType.COMMON;
         final var expectedErrorMessage = "'name' should not be null";
         final var expectedErrorCount = 1;
 
-        final var aCommand = CreateCategoryCommand.with(expectedName, expectedDescription, expectedIsActive);
+        final var aCommand = CreateCategoryCommand.with(expectedName, expectedDescription, expectedIsActive, expectedType);
 
         final var notification = useCase.execute(aCommand).getLeft();
 
@@ -81,12 +85,13 @@ public class CreateCategoryUseCaseTest {
     }
 
     @Test
-    void givenAValidCommandWithInactiveCategory_whenCallsCreateCategory_shouldReturnInactiveCategoryId() {
+    void givenAValidCommandWithInactiveCategoryCommon_whenCallsCreateCategory_shouldReturnInactiveCategoryId() {
         final var expectedName = "Filmes";
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = false;
+        final var expectedType = CategoryType.COMMON;
 
-        final var aCommand = CreateCategoryCommand.with(expectedName, expectedDescription, expectedIsActive);
+        final var aCommand = CreateCategoryCommand.with(expectedName, expectedDescription, expectedIsActive, expectedType);
 
         when(categoryGateway.create(any())).thenAnswer(returnsFirstArg());
 
@@ -100,9 +105,30 @@ public class CreateCategoryUseCaseTest {
                 && Objects.equals(expectedName, aCategory.getName())
                 && Objects.equals(expectedDescription, aCategory.getDescription())
                 && Objects.equals(expectedIsActive, aCategory.isActive())
+                && Objects.equals(expectedType, aCategory.getType())
                 && Objects.nonNull(aCategory.getCreatedAt())
                 && Objects.nonNull(aCategory.getUpdatedAt())
                 && Objects.nonNull(aCategory.getDeletedAt())));
+    }
+
+    @Test
+    void givenAInvalidCommandWithInactiveCategoryRestrict_whenCallsCreateCategory_shouldReturnDomainException() {
+        final var expectedName = "Filmes";
+        final var expectedDescription = "A categoria mais assistida";
+        final var expectedIsActive = false;
+        final var expectedType = CategoryType.RESTRICT;
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = "'active' cannot be false for restrict category";
+
+        final var aCommand = CreateCategoryCommand.with(expectedName, expectedDescription, expectedIsActive, expectedType);
+
+        final var notification = useCase.execute(aCommand).getLeft();
+
+        assertEquals(expectedErrorCount, notification.getErrors().size());
+        assertTrue(notification.firstError().isPresent());
+        assertEquals(expectedErrorMessage, notification.firstError().get().message());
+
+        verify(categoryGateway, never()).create(any());
     }
 
     @Test
@@ -110,10 +136,11 @@ public class CreateCategoryUseCaseTest {
         final var expectedName = "Filmes";
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = true;
+        final var expectedType = CategoryType.COMMON;
         final var expectedErrorMessage = "Gateway error";
         final var expectedErrorCount = 1;
 
-        final var aCommand = CreateCategoryCommand.with(expectedName, expectedDescription, expectedIsActive);
+        final var aCommand = CreateCategoryCommand.with(expectedName, expectedDescription, expectedIsActive, expectedType);
 
         when(categoryGateway.create(any())).thenThrow(new IllegalStateException(expectedErrorMessage));
 
@@ -128,6 +155,7 @@ public class CreateCategoryUseCaseTest {
                 && Objects.equals(expectedName, aCategory.getName())
                 && Objects.equals(expectedDescription, aCategory.getDescription())
                 && Objects.equals(expectedIsActive, aCategory.isActive())
+                && Objects.equals(expectedType, aCategory.getType())
                 && Objects.nonNull(aCategory.getCreatedAt())
                 && Objects.nonNull(aCategory.getUpdatedAt())
                 && Objects.isNull(aCategory.getDeletedAt())));

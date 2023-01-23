@@ -11,6 +11,7 @@ public class Category extends AggregateRoot<CategoryID> implements Cloneable {
     private String name;
     private String description;
     private boolean active;
+    private CategoryType type;
     private Instant createdAt;
     private Instant updatedAt;
     private Instant deletedAt;
@@ -20,6 +21,7 @@ public class Category extends AggregateRoot<CategoryID> implements Cloneable {
         final String aName,
         final String aDescription,
         final boolean isActive,
+        final CategoryType aType,
         final Instant aCreatedInstant,
         final Instant aUpdatedInstant,
         final Instant aDeletedInstant) {
@@ -27,6 +29,7 @@ public class Category extends AggregateRoot<CategoryID> implements Cloneable {
         this.name = aName;
         this.description = aDescription;
         this.active = isActive;
+        this.type = aType;
         this.createdAt = Objects.requireNonNull(aCreatedInstant, "'createdAt' should not be null");
         this.updatedAt = Objects.requireNonNull(aUpdatedInstant, "'updatedAt' should not be null");
         this.deletedAt = aDeletedInstant;
@@ -35,11 +38,12 @@ public class Category extends AggregateRoot<CategoryID> implements Cloneable {
     public static Category newCategory(
         final String aName,
         final String aDescription,
-        final boolean isActive) {
+        final boolean isActive,
+        final CategoryType aType) {
         final var id = CategoryID.unique();
         final var now = Instant.now();
         final var deletedAt = isActive ? null : now;
-        return new Category(id, aName, aDescription, isActive, now, now, deletedAt);
+        return new Category(id, aName, aDescription, isActive, aType, now, now, deletedAt);
     }
 
     public static Category with(
@@ -47,10 +51,11 @@ public class Category extends AggregateRoot<CategoryID> implements Cloneable {
         final String name,
         final String description,
         final boolean active,
+        final CategoryType type,
         final Instant createdAt,
         final Instant updatedAt,
         final Instant deletedAt) {
-        return new Category(id, name, description, active, createdAt, updatedAt, deletedAt);
+        return new Category(id, name, description, active, type, createdAt, updatedAt, deletedAt);
     }
 
     @Override
@@ -103,6 +108,10 @@ public class Category extends AggregateRoot<CategoryID> implements Cloneable {
 
     public boolean isActive() {
         return active;
+    }
+
+    public CategoryType getType() {
+        return type;
     }
 
     public Instant getCreatedAt() {
