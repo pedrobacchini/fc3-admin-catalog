@@ -10,7 +10,7 @@ public class Category extends AggregateRoot<CategoryID> implements Cloneable {
 
     private String name;
     private String description;
-    private boolean active;
+    private Boolean active;
     private CategoryType type;
     private Instant createdAt;
     private Instant updatedAt;
@@ -20,7 +20,7 @@ public class Category extends AggregateRoot<CategoryID> implements Cloneable {
         final CategoryID anId,
         final String aName,
         final String aDescription,
-        final boolean isActive,
+        final Boolean isActive,
         final CategoryType aType,
         final Instant aCreatedInstant,
         final Instant aUpdatedInstant,
@@ -38,7 +38,7 @@ public class Category extends AggregateRoot<CategoryID> implements Cloneable {
     public static Category newCategory(
         final String aName,
         final String aDescription,
-        final boolean isActive,
+        final Boolean isActive,
         final CategoryType aType) {
         final var id = CategoryID.unique();
         final var now = Instant.now();
@@ -50,7 +50,7 @@ public class Category extends AggregateRoot<CategoryID> implements Cloneable {
         final CategoryID id,
         final String name,
         final String description,
-        final boolean active,
+        final Boolean active,
         final CategoryType type,
         final Instant createdAt,
         final Instant updatedAt,
@@ -83,7 +83,7 @@ public class Category extends AggregateRoot<CategoryID> implements Cloneable {
     public Category update(
         final String aName,
         final String aDescription,
-        final boolean isActive) {
+        final Boolean isActive) {
         if (isActive)
             activate();
         else
@@ -106,7 +106,7 @@ public class Category extends AggregateRoot<CategoryID> implements Cloneable {
         return description;
     }
 
-    public boolean isActive() {
+    public Boolean isActive() {
         return active;
     }
 

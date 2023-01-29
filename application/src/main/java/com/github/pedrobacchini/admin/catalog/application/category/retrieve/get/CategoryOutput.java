@@ -10,7 +10,7 @@ public record CategoryOutput(
     CategoryID id,
     String name,
     String description,
-    boolean isActive,
+    Boolean isActive,
     CategoryType type,
     Instant createdAt,
     Instant updatedAt,
