@@ -3,6 +3,7 @@ package com.github.pedrobacchini.admin.catalog.infrastructure.category;
 import com.github.pedrobacchini.admin.catalog.domain.category.Category;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryID;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategorySearchQuery;
+import com.github.pedrobacchini.admin.catalog.domain.category.CategoryType;
 import com.github.pedrobacchini.admin.catalog.infrastructure.MySQLGatewayTest;
 import com.github.pedrobacchini.admin.catalog.infrastructure.category.persistence.CategoryJpaEntity;
 import com.github.pedrobacchini.admin.catalog.infrastructure.category.persistence.CategoryRepository;
@@ -32,8 +33,9 @@ class CategoryMySQLGatewayTest {
         final var expectedName = "Filmes";
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = true;
+        final var expectedType = CategoryType.COMMON;
 
-        final var aCategory = Category.newCategory(expectedName, expectedDescription, expectedIsActive);
+        final var aCategory = Category.newCategory(expectedName, expectedDescription, expectedIsActive, expectedType);
 
         assertEquals(0, categoryRepository.count());
 
@@ -45,6 +47,7 @@ class CategoryMySQLGatewayTest {
         assertEquals(expectedName, actualCategory.getName());
         assertEquals(expectedDescription, actualCategory.getDescription());
         assertEquals(expectedIsActive, actualCategory.isActive());
+        assertEquals(expectedType, actualCategory.getType());
         assertEquals(aCategory.getCreatedAt(), actualCategory.getCreatedAt());
         assertEquals(aCategory.getUpdatedAt(), actualCategory.getUpdatedAt());
         assertEquals(aCategory.getDeletedAt(), actualCategory.getDeletedAt());
@@ -57,6 +60,7 @@ class CategoryMySQLGatewayTest {
         assertEquals(expectedName, actualEntity.getName());
         assertEquals(expectedDescription, actualEntity.getDescription());
         assertEquals(expectedIsActive, actualEntity.isActive());
+        assertEquals(expectedType, actualEntity.getType());
         assertEquals(aCategory.getCreatedAt(), actualEntity.getCreatedAt());
         assertEquals(aCategory.getUpdatedAt(), actualEntity.getUpdatedAt());
         assertEquals(aCategory.getDeletedAt(), actualEntity.getDeletedAt());
@@ -65,7 +69,7 @@ class CategoryMySQLGatewayTest {
 
     @Test
     void givenAValidCategory_whenCallsUpdate_shouldReturnANewCategory() {
-        final var aCategory = Category.newCategory("Film", null, true);
+        final var aCategory = Category.newCategory("Film", null, true, CategoryType.COMMON);
 
         assertEquals(0, categoryRepository.count());
 
@@ -83,6 +87,7 @@ class CategoryMySQLGatewayTest {
         final var expectedName = "Filmes";
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = true;
+        final var expectedType = aCategory.getType();
 
         final var aUpdatedCategory = aCategory.clone().update(expectedName, expectedDescription, expectedIsActive);
 
@@ -94,6 +99,7 @@ class CategoryMySQLGatewayTest {
         assertEquals(expectedName, actualCategory.getName());
         assertEquals(expectedDescription, actualCategory.getDescription());
         assertEquals(expectedIsActive, actualCategory.isActive());
+        assertEquals(expectedType, actualCategory.getType());
         assertEquals(aCategory.getCreatedAt(), actualCategory.getCreatedAt());
         assertTrue(aCategory.getUpdatedAt().isBefore(actualCategory.getUpdatedAt()));
         assertEquals(aCategory.getDeletedAt(), actualCategory.getDeletedAt());
@@ -106,6 +112,7 @@ class CategoryMySQLGatewayTest {
         assertEquals(expectedName, actualEntity.getName());
         assertEquals(expectedDescription, actualEntity.getDescription());
         assertEquals(expectedIsActive, actualEntity.isActive());
+        assertEquals(expectedType, actualCategory.getType());
         assertEquals(aCategory.getCreatedAt(), actualEntity.getCreatedAt());
         assertTrue(aCategory.getUpdatedAt().isBefore(actualEntity.getUpdatedAt()));
         assertEquals(aCategory.getDeletedAt(), actualEntity.getDeletedAt());
@@ -115,7 +122,7 @@ class CategoryMySQLGatewayTest {
     @Test
     void givenAPrePesistedCategoryAnValidCategoryId_whenCallsDelete_shouldDeleteCategory() {
 
-        final var aCategory = Category.newCategory("Filmes", "A categoria", true);
+        final var aCategory = Category.newCategory("Filmes", "A categoria", true, CategoryType.COMMON);
 
         assertEquals(0, categoryRepository.count());
 
@@ -144,7 +151,7 @@ class CategoryMySQLGatewayTest {
 
     @Test
     void givenAPrePesistedCategoryAnValidCategoryId_whenCallsFindById_shouldReturnCategory() {
-        final var aCategory = Category.newCategory("Filmes", "A categoria", true);
+        final var aCategory = Category.newCategory("Filmes", "A categoria", true, CategoryType.COMMON);
 
         assertEquals(0, categoryRepository.count());
 
@@ -161,6 +168,7 @@ class CategoryMySQLGatewayTest {
         assertEquals(aCategory.getName(), actualCategory.getName());
         assertEquals(aCategory.getDescription(), actualCategory.getDescription());
         assertEquals(aCategory.isActive(), actualCategory.isActive());
+        assertEquals(aCategory.getType(), actualCategory.getType());
         assertEquals(aCategory.getCreatedAt(), actualCategory.getCreatedAt());
         assertEquals(aCategory.getUpdatedAt(), actualCategory.getUpdatedAt());
         assertEquals(aCategory.getDeletedAt(), actualCategory.getDeletedAt());
@@ -185,9 +193,9 @@ class CategoryMySQLGatewayTest {
         final var expectedPerPage = 1;
         final var expectedTotal = 3;
 
-        final var filmes = Category.newCategory("Filmes", null, true);
-        final var series = Category.newCategory("Series", null, true);
-        final var documentario = Category.newCategory("Documentario", null, true);
+        final var filmes = Category.newCategory("Filmes", null, true, CategoryType.COMMON);
+        final var series = Category.newCategory("Series", null, true, CategoryType.RESTRICT);
+        final var documentario = Category.newCategory("Documentario", null, true, CategoryType.COMMON);
 
         assertEquals(0, categoryRepository.count());
 
@@ -229,9 +237,9 @@ class CategoryMySQLGatewayTest {
         final var expectedPerPage = 1;
         final var expectedTotal = 3;
 
-        final var filmes = Category.newCategory("Filmes", null, true);
-        final var series = Category.newCategory("Series", null, true);
-        final var documentario = Category.newCategory("Documentario", null, true);
+        final var filmes = Category.newCategory("Filmes", null, true, CategoryType.COMMON);
+        final var series = Category.newCategory("Series", null, true, CategoryType.RESTRICT);
+        final var documentario = Category.newCategory("Documentario", null, true, CategoryType.COMMON);
 
         assertEquals(0, categoryRepository.count());
 
@@ -282,9 +290,9 @@ class CategoryMySQLGatewayTest {
         final var expectedPerPage = 1;
         final var expectedTotal = 1;
 
-        final var filmes = Category.newCategory("Filmes", null, true);
-        final var series = Category.newCategory("Series", null, true);
-        final var documentario = Category.newCategory("Documentario", null, true);
+        final var filmes = Category.newCategory("Filmes", null, true, CategoryType.COMMON);
+        final var series = Category.newCategory("Series", null, true, CategoryType.RESTRICT);
+        final var documentario = Category.newCategory("Documentario", null, true, CategoryType.COMMON);
 
         assertEquals(0, categoryRepository.count());
 
@@ -311,9 +319,9 @@ class CategoryMySQLGatewayTest {
         final var expectedPerPage = 1;
         final var expectedTotal = 1;
 
-        final var filmes = Category.newCategory("Filmes", "A categoria mais assistida", true);
-        final var series = Category.newCategory("Series", "Uma categoria assistida", true);
-        final var documentario = Category.newCategory("Documentario", "A categoria menos assistida", true);
+        final var filmes = Category.newCategory("Filmes", "A categoria mais assistida", true, CategoryType.COMMON);
+        final var series = Category.newCategory("Series", "Uma categoria assistida", true, CategoryType.RESTRICT);
+        final var documentario = Category.newCategory("Documentario", "A categoria menos assistida", true, CategoryType.COMMON);
 
         assertEquals(0, categoryRepository.count());
 

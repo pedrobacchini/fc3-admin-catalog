@@ -51,6 +51,7 @@ public class GetCategoryByIdUseCaseTest {
         assertEquals(expectedCategory.getName(), actualCategory.name());
         assertEquals(expectedCategory.getDescription(), actualCategory.description());
         assertEquals(expectedCategory.isActive(), actualCategory.isActive());
+        assertEquals(expectedCategory.getType(), actualCategory.type());
         assertEquals(expectedCategory.getCreatedAt(), actualCategory.createdAt());
         assertEquals(expectedCategory.getUpdatedAt(), actualCategory.updatedAt());
         assertEquals(expectedCategory.getDeletedAt(), actualCategory.deletedAt());

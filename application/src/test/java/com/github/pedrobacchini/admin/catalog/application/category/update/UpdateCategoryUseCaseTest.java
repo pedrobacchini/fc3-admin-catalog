@@ -3,6 +3,7 @@ package com.github.pedrobacchini.admin.catalog.application.category.update;
 import com.github.pedrobacchini.admin.catalog.domain.category.Category;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryGateway;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryID;
+import com.github.pedrobacchini.admin.catalog.domain.category.CategoryType;
 import com.github.pedrobacchini.admin.catalog.domain.exception.DomainException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,11 +46,12 @@ public class UpdateCategoryUseCaseTest {
 
     @Test
     void givenAValidCommand_whenCallsUpdateCategory_shouldReturnCategoryId() {
-        final var aCategory = Category.newCategory("Film", null, true);
+        final var aCategory = Category.newCategory("Film", null, true, CategoryType.COMMON);
 
         final var expectedName = "Filmes";
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = true;
+        final var expectedType = CategoryType.COMMON;
 
         final var expectedId = aCategory.getId();
         final var aCommand = UpdateCategoryCommand.with(
@@ -72,14 +74,15 @@ public class UpdateCategoryUseCaseTest {
                 && Objects.equals(expectedName, aUpdatedCategory.getName())
                 && Objects.equals(expectedDescription, aUpdatedCategory.getDescription())
                 && Objects.equals(expectedIsActive, aUpdatedCategory.isActive())
+                && Objects.equals(expectedType, aUpdatedCategory.getType())
                 && Objects.equals(aCategory.getCreatedAt(), aUpdatedCategory.getCreatedAt())
                 && aCategory.getUpdatedAt().isBefore(aUpdatedCategory.getUpdatedAt())
                 && Objects.isNull(aUpdatedCategory.getDeletedAt())));
     }
 
     @Test
-    void givenAInvalidName_whenCallsUpdateCategory_thenShouldReturnDomainException() {
-        final var aCategory = Category.newCategory("Film", null, true);
+    void givenAInvalidName_whenCallsUpdateCategory_shouldReturnDomainException() {
+        final var aCategory = Category.newCategory("Film", null, true, CategoryType.COMMON);
 
         final String expectedName = null;
         final var expectedDescription = "A categoria mais assistida";
@@ -101,15 +104,17 @@ public class UpdateCategoryUseCaseTest {
         assertTrue(notification.firstError().isPresent());
         assertEquals(expectedErrorMessage, notification.firstError().get().message());
 
+        verify(categoryGateway, times(1)).findById(eq(expectedId));
         verify(categoryGateway, never()).update(any());
     }
 
     @Test
-    void givenAValidInactiveCommand_whenCallsUpdateCategory_shouldReturnInactiveCategoryId() {
-        final var aCategory = Category.newCategory("Film", null, true);
+    void givenAValidInactiveCommand_whenCallsUpdateCategoryCommon_shouldReturnInactiveCategoryId() {
+        final var aCategory = Category.newCategory("Filme", null, true, CategoryType.COMMON);
         final var expectedName = "Filmes";
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = false;
+        final var expectedType = CategoryType.COMMON;
         final var expectedId = aCategory.getId();
 
         final var aCommand = UpdateCategoryCommand.with(
@@ -129,22 +134,51 @@ public class UpdateCategoryUseCaseTest {
         assertNotNull(actualOutput);
         assertNotNull(actualOutput.id());
 
+        verify(categoryGateway, times(1)).findById(eq(expectedId));
         verify(categoryGateway, times(1))
             .update(argThat(aUpdatedCategory -> Objects.equals(expectedId, aUpdatedCategory.getId())
                 && Objects.equals(expectedName, aUpdatedCategory.getName())
                 && Objects.equals(expectedDescription, aUpdatedCategory.getDescription())
                 && Objects.equals(expectedIsActive, aUpdatedCategory.isActive())
+                && Objects.equals(expectedType, aUpdatedCategory.getType())
                 && Objects.nonNull(aUpdatedCategory.getCreatedAt())
                 && aCategory.getUpdatedAt().isBefore(aUpdatedCategory.getUpdatedAt())
                 && Objects.nonNull(aUpdatedCategory.getDeletedAt())));
     }
 
     @Test
+    void givenAInvalidInactiveCommand_whenCallsUpdateCategoryRestrict_shouldReturnAException() {
+        final var aCategory = Category.newCategory("Filme", "A categoria mais assistida", true, CategoryType.RESTRICT);
+        final var expectedId = aCategory.getId();
+        final var expectedName = aCategory.getName();
+        final var expectedDescription = aCategory.getDescription();
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = "'active' cannot be false for restrict category";
+
+        final var aCommand = UpdateCategoryCommand.with(
+            expectedId.getValue(),
+            expectedName,
+            expectedDescription,
+            false);
+
+        when(categoryGateway.findById(eq(expectedId))).thenReturn(Optional.of(aCategory.clone()));
+        final var notification = useCase.execute(aCommand).getLeft();
+
+        assertEquals(expectedErrorCount, notification.getErrors().size());
+        assertTrue(notification.firstError().isPresent());
+        assertEquals(expectedErrorMessage, notification.firstError().get().message());
+
+        verify(categoryGateway, times(1)).findById(eq(expectedId));
+        verify(categoryGateway, never()).update(any());
+    }
+
+    @Test
     void givenAValidCommand_whenGatewayThrowsRandomException_shouldReturnAException() {
-        final var aCategory = Category.newCategory("Film", null, true);
+        final var aCategory = Category.newCategory("Film", null, true, CategoryType.COMMON);
         final var expectedName = "Filmes";
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = true;
+        final var expectedType = CategoryType.COMMON;
         final var expectedId = aCategory.getId();
         final var expectedErrorMessage = "Gateway error";
         final var expectedErrorCount = 1;
@@ -164,11 +198,13 @@ public class UpdateCategoryUseCaseTest {
         assertTrue(notification.firstError().isPresent());
         assertEquals(expectedErrorMessage, notification.firstError().get().message());
 
+        verify(categoryGateway, times(1)).findById(eq(expectedId));
         verify(categoryGateway, times(1))
             .update(argThat(aUpdatedCategory -> Objects.nonNull(aUpdatedCategory.getId())
                 && Objects.equals(expectedName, aUpdatedCategory.getName())
                 && Objects.equals(expectedDescription, aUpdatedCategory.getDescription())
                 && Objects.equals(expectedIsActive, aUpdatedCategory.isActive())
+                && Objects.equals(expectedType, aUpdatedCategory.getType())
                 && Objects.nonNull(aUpdatedCategory.getCreatedAt())
                 && aCategory.getUpdatedAt().isBefore(aUpdatedCategory.getUpdatedAt())
                 && Objects.isNull(aUpdatedCategory.getDeletedAt())));
