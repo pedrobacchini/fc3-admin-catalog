@@ -33,4 +33,9 @@ public class RestrictCategory extends Category {
         return new RestrictCategory(id, name, description, active, createdAt, updatedAt, deletedAt);
     }
 
+    @Override
+    public RestrictCategory update(final String aName, final String aDescription) {
+        return (RestrictCategory) super.update(aName, aDescription);
+    }
+
 }

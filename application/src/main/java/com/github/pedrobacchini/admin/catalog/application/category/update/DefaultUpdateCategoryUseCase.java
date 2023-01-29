@@ -47,12 +47,15 @@ public class DefaultUpdateCategoryUseCase extends UpdateCategoryUseCase {
         final Category aCategory,
         final Notification notification) {
         if (aCategory instanceof final CommonCategory commonCategory) {
-            final var aCategoryUpdated = commonCategory.update(aName, aDescription);
-            if (isActive) aCategoryUpdated.activate();
-            else aCategoryUpdated.deactivate();
+            final var aCategoryUpdated = commonCategory.update(aName, aDescription, isActive);
             return API.Right(aCategoryUpdated);
-        } else if (aCategory instanceof RestrictCategory && !isActive) {
-            notification.append(new Error("cannot inactivate this category"));
+        } else if (aCategory instanceof final RestrictCategory restrictCategory) {
+            if (isActive) {
+                final var aCategoryUpdated = restrictCategory.update(aName, aDescription);
+                return API.Right(aCategoryUpdated);
+            } else {
+                notification.append(new Error("cannot inactivate this category"));
+            }
         } else {
             notification.append(new Error("type not supported"));
         }

@@ -12,19 +12,28 @@ public interface CategoryDeactivate {
 
     void setUpdatedAt(Instant updatedAt);
 
-    default void deactivate() {
+    default <T extends Category> T deactivate(final T category) {
         final Instant now = Instant.now();
-        if (getDeletedAt() == null) {
-            setDeletedAt(now);
+
+        if (category instanceof CategoryDeactivate cd) {
+            if (cd.getDeletedAt() == null) {
+                cd.setDeletedAt(now);
+            }
+            cd.setActive(false);
+            cd.setUpdatedAt(now);
         }
-        setActive(false);
-        setUpdatedAt(now);
+
+        return category;
     }
 
-    default void activate() {
-        setDeletedAt(null);
-        setActive(true);
-        setUpdatedAt(Instant.now());
+    default <T extends Category> T activate(final T category) {
+        if (category instanceof CategoryDeactivate cd) {
+            cd.setDeletedAt(null);
+            cd.setActive(true);
+            cd.setUpdatedAt(Instant.now());
+        }
+
+        return category;
     }
 
 }

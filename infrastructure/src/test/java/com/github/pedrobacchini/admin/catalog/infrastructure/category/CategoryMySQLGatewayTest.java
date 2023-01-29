@@ -84,7 +84,7 @@ class CategoryMySQLGatewayTest {
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = true;
 
-        final var aUpdatedCategory = aCategory.clone().update(expectedName, expectedDescription);
+        final var aUpdatedCategory = aCategory.clone().update(expectedName, expectedDescription, expectedIsActive);
 
         final var actualCategory = categoryMySQLGateway.update(aUpdatedCategory);
 

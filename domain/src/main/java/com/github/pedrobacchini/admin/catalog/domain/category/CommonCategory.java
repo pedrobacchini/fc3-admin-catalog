@@ -40,9 +40,21 @@ public final class CommonCategory extends Category implements CategoryDeactivate
         return new CommonCategory(id, name, description, active, createdAt, updatedAt, deletedAt);
     }
 
-    @Override
-    public CommonCategory update(final String aName, final String aDescription) {
+    public CommonCategory update(
+        final String aName,
+        final String aDescription,
+        final boolean isActive) {
+        if (isActive) activate();
+        else deactivate();
         return (CommonCategory) super.update(aName, aDescription);
+    }
+
+    public CommonCategory deactivate() {
+        return deactivate(this);
+    }
+
+    public CommonCategory activate() {
+        return activate(this);
     }
 
     @Override
