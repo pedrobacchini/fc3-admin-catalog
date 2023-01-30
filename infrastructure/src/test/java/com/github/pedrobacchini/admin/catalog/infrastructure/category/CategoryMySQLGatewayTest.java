@@ -138,7 +138,7 @@ class CategoryMySQLGatewayTest {
     @Test
     void givenAPrePesistedCategoryAnInvalidCategoryId_whenCallsDelete_shouldDeleteCategory() {
         final var expectedMessageError = "No class com.github.pedrobacchini.admin.catalog.infrastructure.category.persistence.CategoryJpaEntity " +
-            "entity with id invalid exists!";
+            "entity with id invalid exists";
 
         assertEquals(0, categoryRepository.count());
 
