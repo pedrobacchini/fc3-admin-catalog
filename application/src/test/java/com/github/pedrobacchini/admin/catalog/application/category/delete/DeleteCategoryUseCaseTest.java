@@ -57,9 +57,9 @@ public class DeleteCategoryUseCaseTest {
     }
 
     @Test
-    void givenAInvalidId_whenGatewayThrowsException_shouldReturnException() {
+    void givenAValidId_whenGatewayThrowsException_shouldReturnException() {
 
-        final var aCategoryID = CategoryID.from("123");
+        final var aCategoryID = CategoryID.from(UUID.randomUUID());
 
         doThrow(new IllegalStateException("Gateway error"))
             .when(categoryGateway).deleteById(aCategoryID);

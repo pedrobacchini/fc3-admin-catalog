@@ -12,16 +12,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @IntegrationTest
 public class GetCategoryByIdUseCaseIT {
@@ -42,6 +37,7 @@ public class GetCategoryByIdUseCaseIT {
 
         save(expectedCategory);
 
+        assertEquals(1, categoryRepository.count());
         final var actualCategory = useCase.execute(expectedID.getValue());
 
         assertEquals(expectedCategory.getId(), actualCategory.id());
@@ -52,10 +48,6 @@ public class GetCategoryByIdUseCaseIT {
         assertEquals(expectedCategory.getCreatedAt(), actualCategory.createdAt());
         assertEquals(expectedCategory.getUpdatedAt(), actualCategory.updatedAt());
         assertEquals(expectedCategory.getDeletedAt(), actualCategory.deletedAt());
-    }
-
-    private void save(final Category... aCategory) {
-        categoryRepository.saveAllAndFlush(Stream.of(aCategory).map(CategoryJpaEntity::from).toList());
     }
 
     @Test
@@ -83,5 +75,9 @@ public class GetCategoryByIdUseCaseIT {
             () -> useCase.execute(aCategoryID.getValue()));
 
         assertEquals(expectedErrorMessage, actualException.getMessage());
+    }
+
+    private void save(final Category... aCategory) {
+        categoryRepository.saveAllAndFlush(Stream.of(aCategory).map(CategoryJpaEntity::from).toList());
     }
 }
