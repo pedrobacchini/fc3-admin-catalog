@@ -8,8 +8,9 @@ import com.github.pedrobacchini.admin.catalog.domain.category.CategoryID;
 import com.github.pedrobacchini.admin.catalog.infrastructure.category.persistence.CategoryJpaEntity;
 import com.github.pedrobacchini.admin.catalog.infrastructure.category.persistence.CategoryRepository;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -28,7 +29,7 @@ public class DeleteCategoryUseCaseIT {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    @InjectMocks
+    @SpyBean
     private CategoryGateway categoryGateway;
 
     @Test
@@ -47,13 +48,16 @@ public class DeleteCategoryUseCaseIT {
 
     @Test
     void givenAInvalidId_whenCallsDeleteCategory_shouldBeOK() {
-        final var aCategoryID = CategoryID.from("123");
+        final var expectedMessageError = "No class com.github.pedrobacchini.admin.catalog.infrastructure.category.persistence.CategoryJpaEntity " +
+            "entity with id invalid exists";
 
         assertEquals(0, categoryRepository.count());
 
-        assertDoesNotThrow(() -> useCase.execute(aCategoryID.getValue()));
+        final var actualException = assertThrows(EmptyResultDataAccessException.class,
+            () -> useCase.execute(CategoryID.from("invalid").getValue()));
 
         assertEquals(0, categoryRepository.count());
+        assertEquals(expectedMessageError, actualException.getMessage());
     }
 
     @Test
