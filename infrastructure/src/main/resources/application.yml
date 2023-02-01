@@ -30,3 +30,4 @@ spring:
             "[hibernate.dialect]": org.hibernate.dialect.MySQL5Dialect
             "[hibernate.generate_statistics]": false
             "[hibernate.connection.provider_disables_autocommit]": true
+            javax.persistence.validation.mode: none
