@@ -10,7 +10,7 @@ public record CaregoryListOutput(
     CategoryID id,
     String name,
     String description,
-    Boolean isActive,
+    boolean isActive,
     CategoryType type,
     Instant createdAt,
     Instant deletedAt

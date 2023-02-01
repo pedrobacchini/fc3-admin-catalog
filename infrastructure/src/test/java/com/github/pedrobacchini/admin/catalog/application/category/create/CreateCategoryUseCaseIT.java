@@ -48,7 +48,7 @@ public class CreateCategoryUseCaseIT {
         assertNotNull(actualOutput);
         assertNotNull(actualOutput.id());
 
-        final var aEntity = categoryRepository.findById(actualOutput.id().getValue())
+        final var aEntity = categoryRepository.findById(actualOutput.id())
             .orElseThrow(AssertionFailedError::new);
 
         assertEquals(expectedName, aEntity.getName());
@@ -102,7 +102,7 @@ public class CreateCategoryUseCaseIT {
         assertNotNull(actualOutput);
         assertNotNull(actualOutput.id());
 
-        final var aEntity = categoryRepository.findById(actualOutput.id().getValue())
+        final var aEntity = categoryRepository.findById(actualOutput.id())
             .orElseThrow(AssertionFailedError::new);
 
         assertEquals(expectedName, aEntity.getName());

@@ -35,22 +35,22 @@ class CategoryRepositoryTest {
         assertEquals(expectedMessageError, actualCause.getMessage());
     }
 
-    @Test
-    void givenAnInvalidNullActive_whenCallsSave_shouldReturnError() {
-        final var expectedPropertyName = "active";
-        final var expectedMessageError = "not-null property references a null or transient value : com.github.pedrobacchini.admin.catalog.infrastructure.category.persistence.CategoryJpaEntity.active";
-        final var aCategory = Category.newCategory("Film", "A categoria", true, CategoryType.COMMON);
-
-        final var anEntity = CategoryJpaEntity.from(aCategory);
-        anEntity.setActive(null);
-
-        final var actualException = assertThrows(DataIntegrityViolationException.class, () -> categoryRepository.save(anEntity));
-
-        final var actualCause = assertInstanceOf(PropertyValueException.class, actualException.getCause());
-
-        assertEquals(expectedPropertyName, actualCause.getPropertyName());
-        assertEquals(expectedMessageError, actualCause.getMessage());
-    }
+//    @Test
+//    void givenAnInvalidNullActive_whenCallsSave_shouldReturnError() {
+//        final var expectedPropertyName = "active";
+//        final var expectedMessageError = "not-null property references a null or transient value : com.github.pedrobacchini.admin.catalog.infrastructure.category.persistence.CategoryJpaEntity.active";
+//        final var aCategory = Category.newCategory("Film", "A categoria", true, CategoryType.COMMON);
+//
+//        final var anEntity = CategoryJpaEntity.from(aCategory);
+//        anEntity.setActive(null);
+//
+//        final var actualException = assertThrows(DataIntegrityViolationException.class, () -> categoryRepository.save(anEntity));
+//
+//        final var actualCause = assertInstanceOf(PropertyValueException.class, actualException.getCause());
+//
+//        assertEquals(expectedPropertyName, actualCause.getPropertyName());
+//        assertEquals(expectedMessageError, actualCause.getMessage());
+//    }
 
     @Test
     void givenAnInvalidNullType_whenCallsSave_shouldReturnError() {

@@ -13,7 +13,7 @@ public class DummyCategoryBuilder {
 
     private String name = dummyObject(String.class);
     private String description = dummyObject(String.class);
-    private Boolean active = dummyObject(Boolean.class);
+    private boolean active = dummyObject(boolean.class);
     private CategoryType type = dummyObject(CategoryType.class);
 
     public Category build() {

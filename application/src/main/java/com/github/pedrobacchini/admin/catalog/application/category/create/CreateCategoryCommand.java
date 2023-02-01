@@ -5,14 +5,14 @@ import com.github.pedrobacchini.admin.catalog.domain.category.CategoryType;
 public record CreateCategoryCommand(
     String name,
     String description,
-    Boolean isActive,
+    boolean isActive,
     CategoryType type
 ) {
 
     public static CreateCategoryCommand with(
         final String aName,
         final String aDescription,
-        final Boolean isActive,
+        final boolean isActive,
         final CategoryType type) {
         return new CreateCategoryCommand(aName, aDescription, isActive, type);
     }

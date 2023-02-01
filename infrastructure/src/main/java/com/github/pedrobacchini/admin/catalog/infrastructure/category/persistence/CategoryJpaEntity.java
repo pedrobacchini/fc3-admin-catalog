@@ -32,7 +32,7 @@ public class CategoryJpaEntity {
     private String description;
 
     @Column(name = "active", nullable = false)
-    private Boolean active;
+    private boolean active;
 
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "type", nullable = false)
@@ -54,7 +54,7 @@ public class CategoryJpaEntity {
         final String id,
         final String name,
         final String description,
-        final Boolean active,
+        final boolean active,
         final CategoryType type,
         final Instant createdAt,
         final Instant updatedAt,
@@ -118,11 +118,11 @@ public class CategoryJpaEntity {
         this.description = description;
     }
 
-    public Boolean isActive() {
+    public boolean isActive() {
         return active;
     }
 
-    public void setActive(final Boolean active) {
+    public void setActive(final boolean active) {
         this.active = active;
     }
 

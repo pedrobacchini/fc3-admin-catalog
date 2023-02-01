@@ -7,6 +7,7 @@ import com.github.pedrobacchini.admin.catalog.application.category.create.Defaul
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryID;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryType;
 import com.github.pedrobacchini.admin.catalog.infrastructure.category.model.CreateCategoryApiInput;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -24,6 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ControllerTest(controllers = CategoryAPI.class)
@@ -48,16 +50,17 @@ public class CategoryAPITest {
         final var aInput = new CreateCategoryApiInput(expectedName, expectedDescription, expectedIsActive, expectedType);
 
         when(createCategoryUseCase.execute(any()))
-            .thenReturn(Right(new CreateCategoryOutput(CategoryID.from("123"))));
+            .thenReturn(Right(new CreateCategoryOutput("123")));
 
         final var request = MockMvcRequestBuilders.post("/categories")
             .contentType(MediaType.APPLICATION_JSON)
             .content(mapper.writeValueAsString(aInput));
         mockMvc.perform(request)
             .andDo(print())
-            .andExpectAll(
-                status().isCreated(),
-                header().string("Location", "/categories/123"));
+            .andExpect(status().isCreated())
+            .andExpect(header().string("Location", "/categories/123"))
+            .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.id", Matchers.equalTo("123")));
 
         verify(createCategoryUseCase, times(1)).execute(argThat(cmd ->
             Objects.equals(expectedName, cmd.name()) &&
