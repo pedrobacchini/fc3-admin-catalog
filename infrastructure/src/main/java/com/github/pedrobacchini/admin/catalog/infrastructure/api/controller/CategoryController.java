@@ -1,4 +1,4 @@
-package com.github.pedrobacchini.admin.catalog.infrastructure.controller;
+package com.github.pedrobacchini.admin.catalog.infrastructure.api.controller;
 
 import com.github.pedrobacchini.admin.catalog.application.category.create.CreateCategoryCommand;
 import com.github.pedrobacchini.admin.catalog.application.category.create.CreateCategoryOutput;
