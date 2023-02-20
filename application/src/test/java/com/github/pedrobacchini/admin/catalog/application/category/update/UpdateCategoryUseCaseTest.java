@@ -216,7 +216,6 @@ public class UpdateCategoryUseCaseTest {
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = false;
         final var expectedId = "123";
-        final var expectedErrorErrorCount = 1;
         final var expectedErrorMessage = "Category with ID %s was not found".formatted(expectedId);
 
         final var aCommand = UpdateCategoryCommand.with(
@@ -229,7 +228,6 @@ public class UpdateCategoryUseCaseTest {
 
         final var actualException = assertThrows(DomainException.class, () -> useCase.execute(aCommand));
 
-        assertEquals(expectedErrorErrorCount, actualException.getErrors().size());
         assertEquals(expectedErrorMessage, actualException.getMessage());
 
         verify(categoryGateway, times(1)).findById(eq(CategoryID.from(expectedId)));

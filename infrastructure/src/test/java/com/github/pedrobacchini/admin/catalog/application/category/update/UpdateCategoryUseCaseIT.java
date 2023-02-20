@@ -4,7 +4,7 @@ import com.github.pedrobacchini.admin.catalog.IntegrationTest;
 import com.github.pedrobacchini.admin.catalog.domain.category.Category;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryGateway;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryType;
-import com.github.pedrobacchini.admin.catalog.domain.exception.DomainException;
+import com.github.pedrobacchini.admin.catalog.domain.exception.NotFoundException;
 import com.github.pedrobacchini.admin.catalog.infrastructure.category.persistence.CategoryJpaEntity;
 import com.github.pedrobacchini.admin.catalog.infrastructure.category.persistence.CategoryRepository;
 import org.junit.jupiter.api.Test;
@@ -215,7 +215,6 @@ public class UpdateCategoryUseCaseIT {
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = false;
         final var expectedId = "123";
-        final var expectedErrorErrorCount = 1;
         final var expectedErrorMessage = "Category with ID %s was not found".formatted(expectedId);
 
         final var aCommand = UpdateCategoryCommand.with(
@@ -224,9 +223,8 @@ public class UpdateCategoryUseCaseIT {
             expectedDescription,
             expectedIsActive);
 
-        final var actualException = assertThrows(DomainException.class, () -> useCase.execute(aCommand));
+        final var actualException = assertThrows(NotFoundException.class, () -> useCase.execute(aCommand));
 
-        assertEquals(expectedErrorErrorCount, actualException.getErrors().size());
         assertEquals(expectedErrorMessage, actualException.getMessage());
     }
 

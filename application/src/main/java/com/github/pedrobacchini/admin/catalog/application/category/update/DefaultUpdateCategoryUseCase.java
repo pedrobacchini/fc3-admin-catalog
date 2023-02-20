@@ -3,8 +3,7 @@ package com.github.pedrobacchini.admin.catalog.application.category.update;
 import com.github.pedrobacchini.admin.catalog.domain.category.Category;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryGateway;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryID;
-import com.github.pedrobacchini.admin.catalog.domain.exception.DomainException;
-import com.github.pedrobacchini.admin.catalog.domain.validation.Error;
+import com.github.pedrobacchini.admin.catalog.domain.exception.NotFoundException;
 import com.github.pedrobacchini.admin.catalog.domain.validation.handler.Notification;
 import io.vavr.API;
 import io.vavr.control.Either;
@@ -35,8 +34,8 @@ public class DefaultUpdateCategoryUseCase extends UpdateCategoryUseCase {
         return notification.hasError() ? API.Left(notification) : update(aCategory);
     }
 
-    private Supplier<DomainException> notFound(final CategoryID anId) {
-        return () -> DomainException.with(new Error("Category with ID %s was not found".formatted(anId.getValue())));
+    private Supplier<NotFoundException> notFound(final CategoryID anId) {
+        return () -> NotFoundException.with(Category.class, anId);
     }
 
     private Either<Notification, UpdateCategoryOutput> update(final Category aCategory) {
