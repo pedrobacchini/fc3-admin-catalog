@@ -4,7 +4,7 @@ import com.github.pedrobacchini.admin.catalog.application.DummyUtil;
 import com.github.pedrobacchini.admin.catalog.domain.category.Category;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryGateway;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryID;
-import com.github.pedrobacchini.admin.catalog.domain.exception.DomainException;
+import com.github.pedrobacchini.admin.catalog.domain.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,7 +65,7 @@ public class GetCategoryByIdUseCaseTest {
         when(categoryGateway.findById(aCategoryID)).thenReturn(Optional.empty());
 
         final var actualException = assertThrows(
-            DomainException.class,
+            NotFoundException.class,
             () -> defaultGetCategoryByIdUseCase.execute(aCategoryID.getValue()));
 
         verify(categoryGateway, times(1)).findById(aCategoryID);

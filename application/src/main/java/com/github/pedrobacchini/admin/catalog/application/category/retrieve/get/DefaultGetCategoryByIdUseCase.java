@@ -1,9 +1,9 @@
 package com.github.pedrobacchini.admin.catalog.application.category.retrieve.get;
 
+import com.github.pedrobacchini.admin.catalog.domain.category.Category;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryGateway;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryID;
-import com.github.pedrobacchini.admin.catalog.domain.exception.DomainException;
-import com.github.pedrobacchini.admin.catalog.domain.validation.Error;
+import com.github.pedrobacchini.admin.catalog.domain.exception.NotFoundException;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -24,8 +24,8 @@ public class DefaultGetCategoryByIdUseCase extends GetCategoryByIdUseCase {
             .orElseThrow(notFound(anCategoryID));
     }
 
-    private Supplier<DomainException> notFound(final CategoryID anId) {
-        return () -> DomainException.with(new Error("Category with ID %s was not found".formatted(anId.getValue())));
+    private Supplier<NotFoundException> notFound(final CategoryID anId) {
+        return () -> NotFoundException.with(Category.class, anId);
     }
 
 }
