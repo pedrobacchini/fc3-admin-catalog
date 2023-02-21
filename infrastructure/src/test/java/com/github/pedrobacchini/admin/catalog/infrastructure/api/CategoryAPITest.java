@@ -7,6 +7,8 @@ import com.github.pedrobacchini.admin.catalog.application.category.create.Create
 import com.github.pedrobacchini.admin.catalog.application.category.delete.DeleteCategoryUseCase;
 import com.github.pedrobacchini.admin.catalog.application.category.retrieve.get.CategoryOutput;
 import com.github.pedrobacchini.admin.catalog.application.category.retrieve.get.GetCategoryByIdUseCase;
+import com.github.pedrobacchini.admin.catalog.application.category.retrieve.list.CaregoryListOutput;
+import com.github.pedrobacchini.admin.catalog.application.category.retrieve.list.ListCategoriesUseCase;
 import com.github.pedrobacchini.admin.catalog.application.category.update.UpdateCategoryOutput;
 import com.github.pedrobacchini.admin.catalog.application.category.update.UpdateCategoryUseCase;
 import com.github.pedrobacchini.admin.catalog.domain.category.Category;
@@ -14,10 +16,11 @@ import com.github.pedrobacchini.admin.catalog.domain.category.CategoryID;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryType;
 import com.github.pedrobacchini.admin.catalog.domain.exception.DomainException;
 import com.github.pedrobacchini.admin.catalog.domain.exception.NotFoundException;
+import com.github.pedrobacchini.admin.catalog.domain.pagination.Pagination;
 import com.github.pedrobacchini.admin.catalog.domain.validation.Error;
 import com.github.pedrobacchini.admin.catalog.domain.validation.handler.Notification;
-import com.github.pedrobacchini.admin.catalog.infrastructure.category.model.CreateCategoryApiInput;
-import com.github.pedrobacchini.admin.catalog.infrastructure.category.model.UpdateCategoryApiInput;
+import com.github.pedrobacchini.admin.catalog.infrastructure.category.model.CreateCategoryRequest;
+import com.github.pedrobacchini.admin.catalog.infrastructure.category.model.UpdateCategoryRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,6 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.List;
 import java.util.Objects;
 
 import static com.github.pedrobacchini.admin.catalog.DummyUtil.dummyObject;
@@ -67,6 +71,9 @@ public class CategoryAPITest {
     @MockBean
     private DeleteCategoryUseCase deleteCategoryUseCase;
 
+    @MockBean
+    private ListCategoriesUseCase listCategoriesUseCase;
+
     @Test
     void givenAValidCommand_whenCallsCreateCategory_shouldReturnCategoryId() throws Exception {
         // given
@@ -75,7 +82,7 @@ public class CategoryAPITest {
         final var expectedIsActive = true;
         final var expectedType = CategoryType.COMMON;
 
-        final var aInput = new CreateCategoryApiInput(expectedName, expectedDescription, expectedIsActive, expectedType);
+        final var aInput = new CreateCategoryRequest(expectedName, expectedDescription, expectedIsActive, expectedType);
 
         when(createCategoryUseCase.execute(any()))
             .thenReturn(Right(CreateCategoryOutput.from("123")));
@@ -112,7 +119,7 @@ public class CategoryAPITest {
         final var expectedErrorCount = 1;
         final var expectedMessageError = "'name' should not be null";
 
-        final var aInput = new CreateCategoryApiInput(expectedName, expectedDescription, expectedIsActive, expectedType);
+        final var aInput = new CreateCategoryRequest(expectedName, expectedDescription, expectedIsActive, expectedType);
 
         when(createCategoryUseCase.execute(any()))
             .thenReturn(Left(Notification.create(new Error(expectedMessageError))));
@@ -149,7 +156,7 @@ public class CategoryAPITest {
         final var expectedType = CategoryType.COMMON;
         final var expectedMessageError = "'name' should not be null";
 
-        final var aInput = new CreateCategoryApiInput(expectedName, expectedDescription, expectedIsActive, expectedType);
+        final var aInput = new CreateCategoryRequest(expectedName, expectedDescription, expectedIsActive, expectedType);
 
         when(createCategoryUseCase.execute(any()))
             .thenThrow(DomainException.with(new Error(expectedMessageError)));
@@ -234,7 +241,7 @@ public class CategoryAPITest {
     void givenAValidCommand_whenCallsUpdateCategory_shouldReturnCategoryId() throws Exception {
         // given
         final var expectedID = dummyObject(String.class);
-        final var aInput = dummyObject(UpdateCategoryApiInput.class);
+        final var aInput = dummyObject(UpdateCategoryRequest.class);
 
         when(updateCategoryUseCase.execute(any()))
             .thenReturn(Right(UpdateCategoryOutput.from(expectedID)));
@@ -265,7 +272,7 @@ public class CategoryAPITest {
         // given
         final var expectedID = "not-found";
         final var expectedErrorMessage = "Category with ID not-found was not found";
-        final var aInput = dummyObject(UpdateCategoryApiInput.class);
+        final var aInput = dummyObject(UpdateCategoryRequest.class);
 
         when(updateCategoryUseCase.execute(any()))
             .thenThrow(NotFoundException.with(Category.class, CategoryID.from(expectedID)));
@@ -302,7 +309,7 @@ public class CategoryAPITest {
         final var expectedErrorCount = 1;
         final var expectedMessageError = "'name' should not be null";
 
-        final var aInput = new UpdateCategoryApiInput(expectedName, expectedDescription, expectedIsActive);
+        final var aInput = new UpdateCategoryRequest(expectedName, expectedDescription, expectedIsActive);
 
         when(updateCategoryUseCase.execute(any()))
             .thenReturn(Left(Notification.create(new Error(expectedMessageError))));
@@ -345,6 +352,60 @@ public class CategoryAPITest {
         response.andExpect(status().isNoContent());
 
         verify(deleteCategoryUseCase, times(1)).execute(expectedID);
+    }
+
+    @Test
+    void givenValidParams_whenCallsListCategories_shouldReturnCategories() throws Exception {
+        // given
+        final var expectedPage = 0;
+        final var expectedPerPage = 10;
+        final var expectedTerms = "djaskjdklas";
+        final var expectedSort = "description";
+        final var expectedDirection = "desc";
+        final var expectedItemsCount = 1;
+        final var expectedTotal = 1;
+
+        final var aCategory = Category.newCategory("Movie", null, true, CategoryType.COMMON);
+        final var expectedPagination = new Pagination<>(expectedPage, expectedPerPage, expectedTotal, List.of(aCategory));
+        final var expectedResult = expectedPagination.map(CaregoryListOutput::from);
+
+        when(listCategoriesUseCase.execute(any()))
+            .thenReturn(expectedResult);
+
+        // when
+        final var request = get("/categories")
+            .queryParam("page", String.valueOf(expectedPage))
+            .queryParam("perPage", String.valueOf(expectedPerPage))
+            .queryParam("search", expectedTerms)
+            .queryParam("sort", expectedSort)
+            .queryParam("dir", expectedDirection)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON);
+
+        final var response = this.mockMvc.perform(request)
+            .andDo(print());
+
+        // then
+        response.andExpect(status().isOk())
+            .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.current_page", equalTo(expectedPage)))
+            .andExpect(jsonPath("$.per_page", equalTo(expectedPerPage)))
+            .andExpect(jsonPath("$.total", equalTo(expectedTotal)))
+            .andExpect(jsonPath("$.items", hasSize(expectedItemsCount)))
+            .andExpect(jsonPath("$.items[0].id", equalTo(aCategory.getId().getValue())))
+            .andExpect(jsonPath("$.items[0].name", equalTo(aCategory.getName())))
+            .andExpect(jsonPath("$.items[0].description", equalTo(aCategory.getDescription())))
+            .andExpect(jsonPath("$.items[0].is_active", equalTo(aCategory.isActive())))
+            .andExpect(jsonPath("$.items[0].type", equalTo(aCategory.getType().toString())))
+            .andExpect(jsonPath("$.items[0].created_at", equalTo(aCategory.getCreatedAt().toString())))
+            .andExpect(jsonPath("$.items[0].deleted_at", equalTo(aCategory.getDeletedAt())));
+
+        verify(listCategoriesUseCase, times(1)).execute(argThat(query ->
+                Objects.equals(expectedPage, query.page())
+                    && Objects.equals(expectedPerPage, query.perPage())
+                    && Objects.equals(expectedDirection, query.direction())
+                    && Objects.equals(expectedSort, query.sort())
+                    && Objects.equals(expectedTerms, query.terms())));
     }
 
 }

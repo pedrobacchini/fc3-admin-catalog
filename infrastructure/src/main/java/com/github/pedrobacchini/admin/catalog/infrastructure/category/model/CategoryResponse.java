@@ -5,7 +5,7 @@ import com.github.pedrobacchini.admin.catalog.domain.category.CategoryType;
 
 import java.time.Instant;
 
-public record CategoryApiOuput(
+public record CategoryResponse(
     String id,
     String name,
     String description,
