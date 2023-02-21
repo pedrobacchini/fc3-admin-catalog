@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pedrobacchini.admin.catalog.ControllerTest;
 import com.github.pedrobacchini.admin.catalog.application.category.create.CreateCategoryOutput;
 import com.github.pedrobacchini.admin.catalog.application.category.create.CreateCategoryUseCase;
+import com.github.pedrobacchini.admin.catalog.application.category.delete.DeleteCategoryUseCase;
 import com.github.pedrobacchini.admin.catalog.application.category.retrieve.get.CategoryOutput;
 import com.github.pedrobacchini.admin.catalog.application.category.retrieve.get.GetCategoryByIdUseCase;
 import com.github.pedrobacchini.admin.catalog.application.category.update.UpdateCategoryOutput;
@@ -37,6 +38,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -61,6 +63,9 @@ public class CategoryAPITest {
 
     @MockBean
     private UpdateCategoryUseCase updateCategoryUseCase;
+
+    @MockBean
+    private DeleteCategoryUseCase deleteCategoryUseCase;
 
     @Test
     void givenAValidCommand_whenCallsCreateCategory_shouldReturnCategoryId() throws Exception {
@@ -322,6 +327,24 @@ public class CategoryAPITest {
             Objects.equals(expectedName, cmd.name()) &&
                 Objects.equals(expectedDescription, cmd.description()) &&
                 Objects.equals(expectedIsActive, cmd.isActive())));
+    }
+
+    @Test
+    void givenAValidId_whenCallsDeleteCategory_shouldReturnNoContent() throws Exception {
+        // given
+        final var expectedID = dummyObject(String.class);
+
+        // when
+        final var request = delete("/categories/{id}", expectedID)
+            .accept(MediaType.APPLICATION_JSON);
+
+        final var response = this.mockMvc.perform(request)
+            .andDo(print());
+
+        // then
+        response.andExpect(status().isNoContent());
+
+        verify(deleteCategoryUseCase, times(1)).execute(expectedID);
     }
 
 }

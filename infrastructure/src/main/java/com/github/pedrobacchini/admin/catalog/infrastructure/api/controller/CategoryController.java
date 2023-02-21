@@ -3,6 +3,7 @@ package com.github.pedrobacchini.admin.catalog.infrastructure.api.controller;
 import com.github.pedrobacchini.admin.catalog.application.category.create.CreateCategoryCommand;
 import com.github.pedrobacchini.admin.catalog.application.category.create.CreateCategoryOutput;
 import com.github.pedrobacchini.admin.catalog.application.category.create.CreateCategoryUseCase;
+import com.github.pedrobacchini.admin.catalog.application.category.delete.DeleteCategoryUseCase;
 import com.github.pedrobacchini.admin.catalog.application.category.retrieve.get.GetCategoryByIdUseCase;
 import com.github.pedrobacchini.admin.catalog.application.category.update.UpdateCategoryCommand;
 import com.github.pedrobacchini.admin.catalog.application.category.update.UpdateCategoryOutput;
@@ -28,13 +29,17 @@ public class CategoryController implements CategoryAPI {
     private final GetCategoryByIdUseCase getCategoryByIdUseCase;
     private final UpdateCategoryUseCase updateCategoryUseCase;
 
+    private final DeleteCategoryUseCase deleteCategoryUseCase;
+
     public CategoryController(
         final CreateCategoryUseCase createCategoryUseCase,
         final GetCategoryByIdUseCase getCategoryByIdUseCase,
-        final UpdateCategoryUseCase updateCategoryUseCase) {
+        final UpdateCategoryUseCase updateCategoryUseCase,
+        final DeleteCategoryUseCase deleteCategoryUseCase) {
         this.createCategoryUseCase = Objects.requireNonNull(createCategoryUseCase);
         this.getCategoryByIdUseCase = Objects.requireNonNull(getCategoryByIdUseCase);
         this.updateCategoryUseCase = Objects.requireNonNull(updateCategoryUseCase);
+        this.deleteCategoryUseCase = Objects.requireNonNull(deleteCategoryUseCase);
     }
 
     @Override
@@ -85,6 +90,11 @@ public class CategoryController implements CategoryAPI {
 
         return updateCategoryUseCase.execute(aCommand)
             .fold(onError, onSuccess);
+    }
+
+    @Override
+    public void deleteById(final String anId) {
+        deleteCategoryUseCase.execute(anId);
     }
 
 }
