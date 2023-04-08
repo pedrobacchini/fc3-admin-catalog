@@ -1,7 +1,7 @@
 package com.github.pedrobacchini.admin.catalog;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import com.github.pedrobacchini.admin.catalog.infrastructure.configuration.ObjectMapperConfig;
+import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.ActiveProfiles;
@@ -16,12 +16,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @ActiveProfiles("test")
-@ComponentScan(includeFilters = {
-    @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".[MySQLGateway]")
+@JsonTest(includeFilters = {
+    @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = ObjectMapperConfig.class)
 })
-@DataJpaTest
-@ExtendWith(MySQLCleanUpExtension.class)
-public @interface MySQLGatewayTest {
-
+public @interface JacksonTest {
 
 }
