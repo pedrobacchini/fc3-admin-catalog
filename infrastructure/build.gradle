@@ -2,9 +2,6 @@ buildscript {
     repositories {
         mavenCentral()
     }
-    dependencies {
-        classpath 'org.flywaydb:flyway-mysql:8.5.13'
-    }
 }
 
 plugins {
@@ -49,7 +46,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'//Necessario para spring boot 3
 
     testImplementation('org.springframework.boot:spring-boot-starter-test')
+
+    testImplementation('org.testcontainers:testcontainers:1.17.6')
+    testImplementation('org.testcontainers:mysql:1.17.6')
+    testImplementation('org.testcontainers:junit-jupiter:1.17.6')
+
     testImplementation('org.flywaydb:flyway-core')
+    testImplementation('org.flywaydb:flyway-mysql')
     implementation 'io.github.dvgaba:easy-random-core:6.1.2'
     testRuntimeOnly('com.h2database:h2')
 }
