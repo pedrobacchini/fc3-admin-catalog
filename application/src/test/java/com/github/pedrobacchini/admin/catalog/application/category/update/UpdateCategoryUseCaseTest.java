@@ -4,7 +4,7 @@ import com.github.pedrobacchini.admin.catalog.domain.category.Category;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryGateway;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryID;
 import com.github.pedrobacchini.admin.catalog.domain.category.CategoryType;
-import com.github.pedrobacchini.admin.catalog.domain.exception.DomainException;
+import com.github.pedrobacchini.admin.catalog.domain.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -173,6 +173,30 @@ public class UpdateCategoryUseCaseTest {
     }
 
     @Test
+    void givenACommandWithInvalidId_whenCallsUpdateCategory_shouldReturnNotFoundException() {
+        final var expectedName = "Filmes";
+        final var expectedDescription = "A categoria mais assistida";
+        final var expectedIsActive = false;
+        final var expectedId = "123";
+        final var expectedErrorMessage = "Category with ID %s was not found".formatted(expectedId);
+
+        final var aCommand = UpdateCategoryCommand.with(
+            expectedId,
+            expectedName,
+            expectedDescription,
+            expectedIsActive);
+
+        when(categoryGateway.findById(eq(CategoryID.from(expectedId)))).thenReturn(Optional.empty());
+
+        final var actualException = assertThrows(NotFoundException.class, () -> useCase.execute(aCommand));
+
+        assertEquals(expectedErrorMessage, actualException.getMessage());
+
+        verify(categoryGateway, times(1)).findById(eq(CategoryID.from(expectedId)));
+        verify(categoryGateway, never()).update(any());
+    }
+
+    @Test
     void givenAValidCommand_whenGatewayThrowsRandomException_shouldReturnAException() {
         final var aCategory = Category.newCategory("Film", null, true, CategoryType.COMMON);
         final var expectedName = "Filmes";
@@ -208,30 +232,6 @@ public class UpdateCategoryUseCaseTest {
                 && Objects.nonNull(aUpdatedCategory.getCreatedAt())
                 && aCategory.getUpdatedAt().isBefore(aUpdatedCategory.getUpdatedAt())
                 && Objects.isNull(aUpdatedCategory.getDeletedAt())));
-    }
-
-    @Test
-    void givenACommandWithInvalidId_whenCallsUpdateCategory_shouldReturnNotFoundException() {
-        final var expectedName = "Filmes";
-        final var expectedDescription = "A categoria mais assistida";
-        final var expectedIsActive = false;
-        final var expectedId = "123";
-        final var expectedErrorMessage = "Category with ID %s was not found".formatted(expectedId);
-
-        final var aCommand = UpdateCategoryCommand.with(
-            expectedId,
-            expectedName,
-            expectedDescription,
-            expectedIsActive);
-
-        when(categoryGateway.findById(eq(CategoryID.from(expectedId)))).thenReturn(Optional.empty());
-
-        final var actualException = assertThrows(DomainException.class, () -> useCase.execute(aCommand));
-
-        assertEquals(expectedErrorMessage, actualException.getMessage());
-
-        verify(categoryGateway, times(1)).findById(eq(CategoryID.from(expectedId)));
-        verify(categoryGateway, never()).update(any());
     }
 
 }

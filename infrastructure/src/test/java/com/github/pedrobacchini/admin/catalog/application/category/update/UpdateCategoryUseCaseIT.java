@@ -171,6 +171,25 @@ public class UpdateCategoryUseCaseIT {
     }
 
     @Test
+    void givenACommandWithInvalidId_whenCallsUpdateCategory_shouldReturnNotFoundException() {
+        final var expectedName = "Filmes";
+        final var expectedDescription = "A categoria mais assistida";
+        final var expectedIsActive = false;
+        final var expectedId = "123";
+        final var expectedErrorMessage = "Category with ID %s was not found".formatted(expectedId);
+
+        final var aCommand = UpdateCategoryCommand.with(
+            expectedId,
+            expectedName,
+            expectedDescription,
+            expectedIsActive);
+
+        final var actualException = assertThrows(NotFoundException.class, () -> useCase.execute(aCommand));
+
+        assertEquals(expectedErrorMessage, actualException.getMessage());
+    }
+
+    @Test
     void givenAValidCommand_whenGatewayThrowsRandomException_shouldReturnAException() {
         final var aCategory = Category.newCategory("Film", null, true, CategoryType.COMMON);
 
@@ -207,25 +226,6 @@ public class UpdateCategoryUseCaseIT {
         assertEquals(aCategory.getCreatedAt(), aEntity.getCreatedAt());
         assertEquals(aCategory.getUpdatedAt(), aEntity.getUpdatedAt());
         assertEquals(aCategory.getDeletedAt(), aEntity.getDeletedAt());
-    }
-
-    @Test
-    void givenACommandWithInvalidId_whenCallsUpdateCategory_shouldReturnNotFoundException() {
-        final var expectedName = "Filmes";
-        final var expectedDescription = "A categoria mais assistida";
-        final var expectedIsActive = false;
-        final var expectedId = "123";
-        final var expectedErrorMessage = "Category with ID %s was not found".formatted(expectedId);
-
-        final var aCommand = UpdateCategoryCommand.with(
-            expectedId,
-            expectedName,
-            expectedDescription,
-            expectedIsActive);
-
-        final var actualException = assertThrows(NotFoundException.class, () -> useCase.execute(aCommand));
-
-        assertEquals(expectedErrorMessage, actualException.getMessage());
     }
 
     private void save(final Category... aCategory) {

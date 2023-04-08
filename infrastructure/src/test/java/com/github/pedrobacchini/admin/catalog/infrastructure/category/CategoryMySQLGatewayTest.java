@@ -43,15 +43,7 @@ class CategoryMySQLGatewayTest {
 
         assertEquals(1, categoryRepository.count());
 
-        assertEquals(aCategory.getId(), actualCategory.getId());
-        assertEquals(expectedName, actualCategory.getName());
-        assertEquals(expectedDescription, actualCategory.getDescription());
-        assertEquals(expectedIsActive, actualCategory.isActive());
-        assertEquals(expectedType, actualCategory.getType());
-        assertEquals(aCategory.getCreatedAt(), actualCategory.getCreatedAt());
-        assertEquals(aCategory.getUpdatedAt(), actualCategory.getUpdatedAt());
-        assertEquals(aCategory.getDeletedAt(), actualCategory.getDeletedAt());
-        assertNull(actualCategory.getDeletedAt());
+        assertEquals(aCategory, actualCategory);
 
         final var actualEntity = categoryRepository.findById(actualCategory.getId().getValue())
             .orElseThrow(AssertionFailedError::new);
@@ -68,7 +60,7 @@ class CategoryMySQLGatewayTest {
     }
 
     @Test
-    void givenAValidCategory_whenCallsUpdate_shouldReturnANewCategory() {
+    void givenAValidCategory_whenCallsUpdate_shouldReturnACategoryUpdated() {
         final var aCategory = Category.newCategory("Film", null, true, CategoryType.COMMON);
 
         assertEquals(0, categoryRepository.count());
