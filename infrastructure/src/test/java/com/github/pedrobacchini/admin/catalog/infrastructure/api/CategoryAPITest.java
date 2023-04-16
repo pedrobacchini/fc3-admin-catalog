@@ -1,6 +1,5 @@
 package com.github.pedrobacchini.admin.catalog.infrastructure.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pedrobacchini.admin.catalog.ControllerTest;
 import com.github.pedrobacchini.admin.catalog.application.category.create.CreateCategoryOutput;
 import com.github.pedrobacchini.admin.catalog.application.category.create.CreateCategoryUseCase;
@@ -21,12 +20,12 @@ import com.github.pedrobacchini.admin.catalog.domain.validation.Error;
 import com.github.pedrobacchini.admin.catalog.domain.validation.handler.Notification;
 import com.github.pedrobacchini.admin.catalog.infrastructure.category.model.CreateCategoryRequest;
 import com.github.pedrobacchini.admin.catalog.infrastructure.category.model.UpdateCategoryRequest;
+import com.github.pedrobacchini.admin.catalog.infrastructure.configuration.json.Json;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
 import java.util.Objects;
@@ -44,6 +43,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -55,9 +55,6 @@ public class CategoryAPITest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper mapper;
 
     @MockBean
     private CreateCategoryUseCase createCategoryUseCase;
@@ -88,9 +85,9 @@ public class CategoryAPITest {
             .thenReturn(Right(CreateCategoryOutput.from("123")));
 
         // when
-        final var request = MockMvcRequestBuilders.post("/categories")
+        final var request = post("/categories")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(mapper.writeValueAsString(aInput));
+            .content(Json.writeValueAsString(aInput));
         final var response = mockMvc.perform(request)
             .andDo(print());
 
@@ -125,9 +122,9 @@ public class CategoryAPITest {
             .thenReturn(Left(Notification.create(new Error(expectedMessageError))));
 
         // when
-        final var request = MockMvcRequestBuilders.post("/categories")
+        final var request = post("/categories")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(mapper.writeValueAsString(aInput));
+            .content(Json.writeValueAsString(aInput));
 
         final var response = mockMvc.perform(request)
             .andDo(print());
@@ -162,9 +159,9 @@ public class CategoryAPITest {
             .thenThrow(DomainException.with(new Error(expectedMessageError)));
 
         // when
-        final var request = MockMvcRequestBuilders.post("/categories")
+        final var request = post("/categories")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(mapper.writeValueAsString(aInput));
+            .content(Json.writeValueAsString(aInput));
 
         final var response = mockMvc.perform(request)
             .andDo(print());
@@ -250,7 +247,7 @@ public class CategoryAPITest {
         final var request = put("/categories/{id}", expectedID)
             .contentType(MediaType.APPLICATION_JSON)
             .content(MediaType.APPLICATION_JSON_VALUE)
-            .content(mapper.writeValueAsString(aInput));
+            .content(Json.writeValueAsString(aInput));
 
         final var response = this.mockMvc.perform(request)
             .andDo(print());
@@ -281,7 +278,7 @@ public class CategoryAPITest {
         final var request = put("/categories/{id}", expectedID)
             .contentType(MediaType.APPLICATION_JSON)
             .content(MediaType.APPLICATION_JSON_VALUE)
-            .content(mapper.writeValueAsString(aInput));
+            .content(Json.writeValueAsString(aInput));
 
         final var response = this.mockMvc.perform(request)
             .andDo(print());
@@ -318,7 +315,7 @@ public class CategoryAPITest {
         final var request = put("/categories/{id}", expectedID)
             .contentType(MediaType.APPLICATION_JSON)
             .content(MediaType.APPLICATION_JSON_VALUE)
-            .content(mapper.writeValueAsString(aInput));
+            .content(Json.writeValueAsString(aInput));
 
         final var response = this.mockMvc.perform(request)
             .andDo(print());
