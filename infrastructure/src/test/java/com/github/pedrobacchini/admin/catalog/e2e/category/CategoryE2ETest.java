@@ -8,6 +8,7 @@ import com.github.pedrobacchini.admin.catalog.infrastructure.category.model.Crea
 import com.github.pedrobacchini.admin.catalog.infrastructure.category.persistence.CategoryRepository;
 import com.github.pedrobacchini.admin.catalog.infrastructure.configuration.json.Json;
 import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -65,15 +66,16 @@ public class CategoryE2ETest {
 
         final var actualId = givenAValidCategory(expectedName, expectedDescription, expectedIsActive, expectedType);
 
-        final var actualCategory = retrieveACategory(actualId.getValue());
+        final var actualCategory = categoryRepository.findById(actualId.getValue())
+            .orElseThrow(AssertionFailedError::new);
 
-        assertEquals(expectedName, actualCategory.name());
-        assertEquals(expectedDescription, actualCategory.description());
-        assertEquals(expectedIsActive, actualCategory.active());
-        assertEquals(expectedType, actualCategory.type());
-        assertNotNull(actualCategory.createdAt());
-        assertNotNull(actualCategory.updatedAt());
-        assertNull(actualCategory.deletedAt());
+        assertEquals(expectedName, actualCategory.getName());
+        assertEquals(expectedDescription, actualCategory.getDescription());
+        assertEquals(expectedIsActive, actualCategory.isActive());
+        assertEquals(expectedType, actualCategory.getType());
+        assertNotNull(actualCategory.getCreatedAt());
+        assertNotNull(actualCategory.getUpdatedAt());
+        assertNull(actualCategory.getDeletedAt());
     }
 
     @Test
@@ -164,6 +166,45 @@ public class CategoryE2ETest {
             .andExpect(jsonPath("$.items[2].name", equalTo("Series")));
     }
 
+    @Test
+    void asACatalogAdminIShouldBeAbleToGetACategoryByItsIdentifier() throws Exception {
+        assertTrue(MY_SQL_CONTAINER.isRunning());
+
+        assertEquals(0, categoryRepository.count());
+
+        final var expectedName = "Filmes";
+        final var expectedDescription = "A categoria mais assistida";
+        final var expectedIsActive = true;
+        final var expectedType = CategoryType.COMMON;
+
+        final var actualId = givenAValidCategory(expectedName, expectedDescription, expectedIsActive, expectedType);
+
+        final var actualCategory = retrieveACategory(actualId.getValue());
+
+        assertEquals(expectedName, actualCategory.name());
+        assertEquals(expectedDescription, actualCategory.description());
+        assertEquals(expectedIsActive, actualCategory.active());
+        assertEquals(expectedType, actualCategory.type());
+        assertNotNull(actualCategory.createdAt());
+        assertNotNull(actualCategory.updatedAt());
+        assertNull(actualCategory.deletedAt());
+    }
+
+    @Test
+    void asACatalogAdminIShouldBeAbleToSeeATreatedErrorByGettingANotFoundCategory() throws Exception {
+        assertTrue(MY_SQL_CONTAINER.isRunning());
+
+        assertEquals(0, categoryRepository.count());
+
+        final var request = get("/categories/123")
+            .accept(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(request)
+            .andDo(print())
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.message", equalTo("Category with ID 123 was not found")));
+    }
+
     private CategoryID givenAValidCategory(
         final String aName,
         final String aDescription,
@@ -200,6 +241,7 @@ public class CategoryE2ETest {
     private ResultActions listCategories(final int page, final int perPage) throws Exception {
         return listCategories(page, perPage, "", "", "");
     }
+
     private ResultActions listCategories(final int page, final int perPage, final String search) throws Exception {
         return listCategories(page, perPage, search, "", "");
     }
