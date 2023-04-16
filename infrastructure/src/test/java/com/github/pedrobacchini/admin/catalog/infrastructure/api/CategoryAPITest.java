@@ -376,8 +376,7 @@ public class CategoryAPITest {
             .queryParam("search", expectedTerms)
             .queryParam("sort", expectedSort)
             .queryParam("dir", expectedDirection)
-            .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON);
+            .accept(MediaType.APPLICATION_JSON);
 
         final var response = this.mockMvc.perform(request)
             .andDo(print());
